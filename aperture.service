@@ -1,0 +1,15 @@
+[Unit]
+Description=Aperture Labs Service
+After=mongod.service network-online.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=1
+User=cserver
+WorkingDirectory=/spam/discord_bots/py_bots/Enforce/new_bot
+ExecStart=/spam/discord_bots/py_bots/Enforce/new_bot/.env/bin/python3.9 /spam/discord_bots/py_bots/Enforce/new_bot/main.py
+
+[Install]
+WantedBy=multi-user.target

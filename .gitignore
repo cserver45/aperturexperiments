@@ -1,0 +1,18 @@
+# possibly copyrighted stuff
+fonts/
+photos/
+videos/
+
+# tests cache directorys
+.nox/
+.mypy_cache/
+__pycache__/
+bot/__pycache__/
+cogs/__pycache__/
+cogs/lib/__pycache__/
+
+# ignore enviroment/logging stuff
+.env/
+log.log
+bot.conf
+linters.conf

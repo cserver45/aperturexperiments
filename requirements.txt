@@ -1,0 +1,13 @@
+discord.py[voice]
+asyncpraw
+colorama
+motor
+aiofiles
+aiodns
+aiohttp[speedups]
+cchardet
+pillow
+humanize
+psutil
+uvloop
+orjson

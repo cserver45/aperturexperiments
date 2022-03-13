@@ -1,0 +1,15 @@
+[Unit]
+Description=Aperture Labs Service
+After=network-online.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=1
+User=ubuntu
+WorkingDirectory=/home/ubuntu/bot/new_bot
+ExecStart=/home/ubuntu/bot/new_bot/.env/bin/python3.9 /home/ubuntu/bot/new_bot/main.py -t protoken --no-dboveride
+
+[Install]
+WantedBy=multi-user.target
