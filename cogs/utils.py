@@ -257,6 +257,16 @@ class UtilsA(Cog, name="Utils"):  # type: ignore[call-arg]
         em.insert_field_at(index=9, name=":ping_pong: Ping:", value=f"Websocket: {round(self.bot.latency * 1000)} ms.\nRoundtrip: {rnd_trp} ms.\nRedis ping (under 10ms is good): {redis_ping} ms.\nMonogdb ping: {mongodb_ping} ms.", inline=False)
         await msg.edit(embed=em)
 
+    @command()
+    async def changelog(self, ctx: Context) -> None:
+        """Shows the changelog if I decide to list anything new there."""
+        async with aiofiles.open("CHANGELOG", mode="r") as f:
+            change = await f.read()
+            split_change = change.split("$$")
+
+            for i in split_change:
+                await ctx.send(i)
+
     # Help commands stuff after this
 
     @command(name="invites", hidden=True)
@@ -336,8 +346,6 @@ class UtilsA(Cog, name="Utils"):  # type: ignore[call-arg]
                     timestamp=ctx.message.created_at)
         cogs = [c for c in self.bot.cogs]  # pylint: disable=R1721
         cogs.remove("EasterEggs")
-        cogs.remove("Jishaku")
-        cogs.remove("LevelSystem")
         try:
             cogs.remove("TicketSystem")
         except ValueError:
