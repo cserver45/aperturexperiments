@@ -6,12 +6,12 @@ from copy import deepcopy
 from typing import Any, List, Optional, Tuple, Union
 
 from colorama import Back, Style
-from discord import Client, Colour, Embed, Message, Reaction, User
+from discord import Client, Colour, Embed, Message, User
 from discord.ext import commands, tasks
 from discord.ext.commands import (Cog, CommandOnCooldown, Context,
                                    MemberConverter, command)
 
-banned_commands = ("deposit", "withdraw", "balance", "send", "shop", "bag")
+banned_commands = ("deposit", "withdraw", "balance", "send", "shop", "bag", "badges")
 
 phrases = ("gib me money", "free money", "noooooooo")
 
@@ -275,82 +275,16 @@ class Economy(Cog):
 
         await ctx.send(embed=em)
 
-    """@bot.command(aliases=['cphone', 'phone'])
-    async def cellphone(ctx):
-        await ctx.send('What do you want to use your phone for (you have 30 seconds)\nOptions:\n`text` Send a message to someone in this server')
-        def check(m):
-            return m.author == ctx.author and m.channel == ctx.channel
-        try:
-            msg = await bot.wait_for('message', timeout=30.0, check=check)
-        except asyncio.TimeoutError:
-            await ctx.send('You didn\'t answer in time, please be quicker next time!')
-            return
-        else:
-            if msg.content == 'text':
-                await ctx.send('Message content: (answer in 30 seconds)')
-                try:
-                    msg2 = await bot.wait_for('message', timeout=30.0, check=check)
-                except asyncio.TimeoutError:
-                    await ctx.send('You didn\'t answer in time dummy.')
-                    return
-                else:
-                    await ctx.send('User to dm (again 30 seconds)')
-                    try:
-                        user = await bot.wait_for('message', timeout=30.0, check=check)
-                    except asyncio.TimeoutError:
-                        await ctx.send('You didn\'t answer in time dummy.')
-                        return
-                    #try:
-                    print(user)
-                    dmuser = user.server.get_member("id")
-                    await dmuser.send(msg2)
-                    await ctx.send("Sent the message.")"""
-
-    @commands.cooldown(1, 5, commands.BucketType.user)
     @command()
-    async def server(self, ctx: Context, how_long: Optional[int]) -> None:
-        """Run a game server and make some money."""
-        await self.open_account(ctx, ctx.author)
-
-        how_long = how_long or 5  # this is so mypy isin't mad
-
-        user_db = await self.db.economy_data.find_one({'userid': str(ctx.author.id)})
-
-        try:
-            if int(user_db["inv"]["server"]) >= 1 and (int(user_db["server_use"]) + 1) <= (int(user_db["inv"]["server"])):
-
-                await self.db.economy_data.update_one({'userid': str(ctx.author.id)}, {'$set': {"server_use": (int(user_db["server_use"]) + 1)}})
-                em = Embed(title='What Type of game do you want to host? (You have 20 seconds to react)', colour=Colour.green())
-                em.add_field(name='Among us', value='5 coins per minute (:sunglasses:) (must be 5 minutes or longer)')
-                # em.add_field(name = 'Minecraft server', value = '7 coins per minute but must be runned for 10 minutes minimum. (:clap:)')
-                bot_msg = await ctx.send(embed=em)
-
-                await bot_msg.add_reaction('😎')
-                await bot_msg.add_reaction('👏')
-
-                def check(reaction: Reaction, user: User) -> bool:
-                    return bool(user == ctx.message.author and str(reaction.emoji) in ['😎', '👏'])
-
-                reaction, _ = await self.bot.wait_for('reaction_add', timeout=15, check=check)
-                if reaction.emoji == "😎" and how_long >= 5:
-                    await ctx.send(f'Ok, Among us server it is! In {how_long} minutes, you will be given {how_long*5} coins.')
-                    await asyncio.sleep(how_long * 60)
-                    await ctx.send(f'Done! {how_long*5} coins will be added to your account')
-                    await self.update_bank(ctx.author, 5 * how_long)
-                    await self.db.economy_data.update_one({'userid': str(ctx.author.id)}, {'$set': {"server_use": (int(user_db["server_use"]) - 1)}})
-                    return
-                elif reaction.emoji == "👏":
-                    await ctx.send("Disabled for now.")
-
-                # elif ctx.message.reactions == '👏':
-
-                else:
-                    await ctx.send('Either you didnt select a server in time, or you had too short of a time.')
-
-            else:
-                await ctx.send('You dont own anymore servers then what are running right now.')
-        except KeyError:
-            await ctx.send("You don\'t own any servers.")
+    async def badges(self, ctx: Context, user: Optional[User]) -> None:
+        """See what badges you currently have."""
+        await self.open_account(ctx, user or ctx.author)
+        result = await self.check_badges(user or ctx.author)
+        em = Embed(title=f"{ctx.author.display_name}\'s Badges",
+                   timestamp=ctx.message.created_at,
+                   description=result
+                   )
+        await ctx.send(embed=em)
 
     @command(hidden=True)
     @commands.is_owner()
@@ -361,18 +295,6 @@ class Economy(Cog):
         await self.open_account(ctx, member)
         await self.update_bank(member, int(ammount))
         await ctx.send(f'Added {ammount} coins to {member}.')
-
-    @command(name="vote", hidden=True)
-    async def get_vote_embed(self, ctx: Context) -> None:
-        """Show an embed about how many times you've voted, and what rewards you'll get if you do vote."""
-        await self.open_account(ctx, ctx.author)
-        await self.register_vote(ctx.author.id)
-
-        em = Embed(title=f"{ctx.author.display_name} vote stats.",
-                   description="Voting helps promote the bot so others can expieriance what you have.\n\n[Top.gg vote link](https://top.gg/)\n[Fateslist vote link](https://fateslist.xyz/bot/735894171071545484)",
-                   timestamp=ctx.message.created_at,
-                   color=Colour.green())
-        await ctx.send(embed=em)
 
     @command()
     async def buy(self, ctx: Context, item: str, amount: Optional[int]) -> None:
@@ -523,18 +445,6 @@ class Economy(Cog):
         """Roll 2 dice."""
         return random.randint(1, 6), random.randint(1, 6)
 
-    async def register_vote(self, userid: int) -> bool:
-        """Check if someone has voted or ran the vote command."""
-        user = await self.db.economy_data.find_one({"userid": userid})
-
-        user_voted = user.get("vote") or None
-
-        if not user_voted:
-            await self.db.economy_data.update_one({"userid": userid}, {"$set": {"vote.total": 0, "vote.week": 0, "vote.topgg": False, "vote.fateslist": False}})
-            return True
-
-        return False
-
     async def open_account(self, ctx: Context, user: User) -> bool:
         """Register an account in the db."""
         users = await self.get_user_data(user)
@@ -624,6 +534,22 @@ class Economy(Cog):
         await self.update_bank(user, cost, "wallet")
 
         return [True, "Worked"]
+
+    async def check_badges(self, user: User) -> str:
+        """See what badges the user has."""
+        user_db = await self.db.economy_data.find_one({'userid': str(user.id)})
+        badge_text = ""
+        try:
+            if user_db["badges"]:
+                for badge in user_db["badges"]:
+                    badge_text += f"{badge} Badge\n"
+                    return badge_text
+            else:
+                return "You have no Badges."
+        except KeyError:
+            await self.db.economy_data.update_one({'userid': str(user.id)}, {'$set': {"badges": {}}})
+
+        return "You have no Badges."
 
 
 def setup(bot: Client) -> None:
