@@ -53,7 +53,6 @@ class UtilsA(Cog, name="Utils"):  # type: ignore[call-arg]
         """Called when the bot leaves a guild."""
         await self.db.server_settings.delete_many({'serverid': str(guild.id)})
 
-    # from: https://github.com/Predeactor/Predeactor-Cogs/tree/master/commandscounter
     @Cog.listener()
     async def on_command(self, ctx: Context) -> None:
         """Call when a command is runned."""
@@ -238,8 +237,8 @@ class UtilsA(Cog, name="Utils"):  # type: ignore[call-arg]
             (":adult: Users:", f"{actual_members_total[0]:,}", True),
             (":homes: Servers (guilds):", f"{actual_members_total[1]:,}", True),
             (":gear: Cogs loaded:", f"{self.bot.cog_count}/{cog_amount} loaded", True),
-            (":desktop: Commmand count:", f"{self.bot.command_count} commands", True),
-            (":ping_pong: Ping:", f"Websocket: {round(self.bot.latency * 1000)} ms.\nRoundtrip: {rnd_trp} ms.\nRedis ping (under 30ms is good): {redis_ping}\nMonogdb ping: {mongodb_ping} ms.", False),
+            (":desktop: Commmand count:", f"{self.bot.command_count} commands\nCommands runned from startup: {self.commands[command]['count']}", True),
+            (":ping_pong: Ping:", f"Websocket: {round(self.bot.latency * 1000)} ms.\nRoundtrip: {rnd_trp} ms.\nMonogdb ping: {mongodb_ping} ms.", False),
             (":clock1: Uptime:", f"{days} days, {hours} hours, {minutes} minutes, {seconds} seconds", False)
         ]
 
