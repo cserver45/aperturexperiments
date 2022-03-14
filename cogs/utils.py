@@ -188,8 +188,6 @@ class UtilsA(Cog, name="Utils"):  # type: ignore[call-arg]
     @command(name="bot_status", aliases=["status", "stats", "bot_info"])
     async def show_bot_status(self, ctx: Context) -> None:
         """Gets some info about the bot."""
-        # redis = await aioredis.create_redis_pool("redis://localhost:51214")
-
         try:
             em = Embed(title="Bot info", colour=ctx.author.color,
                        thumbnail=self.bot.user.avatar.url,
@@ -209,11 +207,6 @@ class UtilsA(Cog, name="Utils"):  # type: ignore[call-arg]
             pid = p.pid
             thread_count = p.num_threads()
             mem = p.memory_full_info()
-
-        startr = time()
-        # await redis.ping()
-        endr = time()
-        redis_ping = f"{(endr-startr)*1000:,.0f}"
 
         startm = time()
         await self.db.command('ping')
@@ -245,15 +238,12 @@ class UtilsA(Cog, name="Utils"):  # type: ignore[call-arg]
         for name, value, inline in fields:
             em.add_field(name=name, value=value, inline=inline)
 
-        # redis.close()
-        # await redis.wait_closed()
-
         start = time()
         msg = await ctx.send(embed=em)
         end = time()
         em.remove_field(9)
         rnd_trp = f"{(end-start)*1000:,.0f}"
-        em.insert_field_at(index=9, name=":ping_pong: Ping:", value=f"Websocket: {round(self.bot.latency * 1000)} ms.\nRoundtrip: {rnd_trp} ms.\nRedis ping (under 10ms is good): {redis_ping} ms.\nMonogdb ping: {mongodb_ping} ms.", inline=False)
+        em.insert_field_at(index=9, name=":ping_pong: Ping:", value=f"Websocket: {round(self.bot.latency * 1000)} ms.\nRoundtrip: {rnd_trp} ms.\nMonogdb ping: {mongodb_ping} ms.", inline=False)
         await msg.edit(embed=em)
 
     @command()

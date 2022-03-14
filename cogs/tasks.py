@@ -31,7 +31,6 @@ class TasksCog(Cog):
         """Called when this cog is ready."""
         if not self.bot.on_ready_mode:
             print(Back.GREEN + Style.BRIGHT + "Tasks Cog Loaded." + Style.RESET_ALL)
-            # check_redis.start()
 
             # the start() methould is created at runtime (this is to shutup pylint)
             # pylint: disable=E1101
@@ -41,12 +40,6 @@ class TasksCog(Cog):
             # pylint: enable=E1101
         else:
             pass
-
-    # @tasks.loop(seconds=60)
-    # async def check_redis(self) -> None:
-    #    """Check if a value in redis is the same as the one in mongodb."""
-
-        # to be done
 
     @tasks.loop(seconds=60)
     async def change_status(self) -> None:
