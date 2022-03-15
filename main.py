@@ -15,6 +15,7 @@ import asyncpraw
 import discord
 import motor.motor_asyncio
 import uvloop
+import orjson
 from colorama import Back, Style
 from discord.ext import commands  # pylint: disable=E0611
 from discord.ext.commands import (CommandNotFound, CommandOnCooldown, Context,
@@ -83,7 +84,7 @@ class Bot(commands.AutoShardedBot):
         # to get the console to shutup about how session is defined in a sync function
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
-            self.session = aiohttp.ClientSession(loop=asyncio.get_event_loop())
+            self.session = aiohttp.ClientSession(json_serialize=orjson.dumps, loop=asyncio.get_event_loop())
 
         # configuration file parser
         self.config = configparser.ConfigParser()
