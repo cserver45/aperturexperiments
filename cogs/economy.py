@@ -195,7 +195,7 @@ class Economy(Cog):
     async def rob(self, ctx: Context, member: MemberConverter) -> None:
         """Rob some money out of someone's wallet."""
         await self.open_account(ctx, ctx.author)
-        if member.id == 776987330967240716 or member.id == 735894171071545484:
+        if member.id in (776987330967240716, 735894171071545484):
             await ctx.send("You can't rob me.")
             return
         else:
@@ -318,11 +318,10 @@ class Economy(Cog):
     async def bag(self, ctx: Context) -> None:
         """See what you have bought."""
         await self.open_account(ctx, ctx.author)
-        user = ctx.author
 
         em = Embed(title="Bag", timestamp=ctx.message.created_at)
 
-        user_db = await self.db.economy_data.find_one({'userid': str(user.id)})
+        user_db = await self.get_user_data(ctx.author)
         for item, amt in user_db["inv"].items():
             name = item
             amount = amt
@@ -368,7 +367,7 @@ class Economy(Cog):
             return
 
         await self.open_account(ctx, ctx.author)
-        user_db = await self.db.economy_data.find_one({'userid': str(ctx.author.id)})
+        user_db = await self.get_user_data(ctx.author)
 
         if int(bet) < 1:
             await ctx.send("You can't bet a negative amount of money.")
@@ -388,7 +387,7 @@ class Economy(Cog):
         else:
             outcome = ("seven", "7")
 
-        msg = "The outcome was {} ({[0]})!".format(result, outcome)
+        msg = f"The outcome was {result} ({outcome[0]})!"
 
         if result == 7 and outcome[1] == "7" and choice in outcome:
             bet *= 5
@@ -408,14 +407,10 @@ class Economy(Cog):
         """Dive and see what people dropped over boats."""
         await self.open_account(ctx, ctx.author)
 
-        user_db = await self.db.economy_data.find_one({'userid': str(ctx.author.id)})
+        item_amt = await self.check_item_amount(ctx.author, "mask")
 
-        try:
-            if user_db["inv"]["mask"] <= 0:
-                await ctx.send("You have 0 diving masks in your invintory right now. Go buy some if you actualy want to dive.")
-                return
-        except KeyError:
-            await ctx.send("You dont have any diving masks in your invintory at this time. (hint: buy some with `buy mask`)")
+        if item_amt <= 0:
+            await ctx.send("You have no diving masks in your invintory right now. Go buy some if you actualy want to dive.")
             return
 
         probability = random.randint(1, 100)
@@ -430,11 +425,11 @@ class Economy(Cog):
         elif probability >= 35:
             amt = random.randint(2, 750)
             await self.update_bank(ctx.author, amt)
-            await self.db.economy_data.update_one({"userid": str(ctx.author.id)}, {"$set": {"inv.mask": (user_db["inv"]["mask"] - 1)}})
+            await self.change_user_fields(ctx.author, "inv.mask", (item_amt - 1))
             await ctx.send(f"Looks like you found a small bit of money ({amt} coins).")
             return
         else:
-            await self.db.economy_data.update_one({"userid": str(ctx.author.id)}, {"$set": {"inv.mask": (user_db["inv"]["mask"] - 1)}})
+            await self.change_user_fields(ctx.author, "inv.mask", (item_amt - 1))
             await ctx.send("Looks like you only found rocks... :rock:")
             return
 
@@ -458,11 +453,10 @@ class Economy(Cog):
     async def update_bank(self, user: User, change: int = 0, mode: str = "wallet") -> List[int]:
         """Update some part of the user's bank info."""
         change = int(change)
-        coll = self.db.economy_data
         if change != 0:
             old_document = await self.get_user_data(user)
             new_num = old_document[mode] + int(change)
-            await coll.update_one({'userid': str(user.id)}, {'$set': {mode: new_num}})
+            await self.change_user_fields(user, mode, new_num)
         updated_data = await self.get_user_data(user)
         bal = [updated_data["wallet"], updated_data["bank"]]
 
@@ -471,6 +465,23 @@ class Economy(Cog):
     async def get_user_data(self, user: User) -> Any:
         """Get data that is stored about that user. Returns None if that user does not exist in the db."""
         return await self.db.economy_data.find_one({"userid": str(user.id)})
+
+    async def change_user_fields(self, user: User, field: str, value: Union[str, int, dict]) -> bool:
+        """Change a value in the database."""
+        try:
+            await self.db.economy_data.update_one({'userid': str(user.id)}, {'$set': {field: value}})
+            return True
+        except ValueError:
+            return False
+
+    async def check_item_amount(self, user: User, name: str) -> int:
+        """Does a user own this item?"""
+        user_db = await self.get_user_data(user)
+
+        try:
+            return int(user_db['items'][str(name)])
+        except KeyError:
+            return 0
 
     async def buy_this(self, user: User, item_name: str, amount: int) -> List[Union[bool, str, int]]:
         """Buy something."""
@@ -481,9 +492,7 @@ class Economy(Cog):
             return [False, 1]
 
         price = mshop["price"]
-
         cost = price * amount
-
         bal = await self.update_bank(user)
 
         if bal[0] < int(cost):
@@ -493,9 +502,9 @@ class Economy(Cog):
 
         if item_name in user_db["inv"]:
             new_amt = int(user_db["inv"][item_name]) + amount
-            await self.db.economy_data.update_one({'userid': str(user.id)}, {'$set': {f"inv.{item_name}": int(new_amt)}})
+            await self.change_user_fields(user, f"inv.{item_name}", int(new_amt))
         else:
-            await self.db.economy_data.update_one({"userid": str(user.id)}, {'$set': {f"inv.{item_name}": int(amount)}})
+            await self.change_user_fields(user, f"inv.{item_name}", int(amount))
 
         await self.update_bank(user, cost * -1, "wallet")
 
@@ -505,39 +514,29 @@ class Economy(Cog):
         """Sell something."""
         price = price or 0  # mypy sigh
         item_name = item_name.lower()
-        name_ = None
-        mshop = self.db.shop_data.find()
+        mshop = await self.db.shop_data.find_one({"name": str(item_name.capitalize())})
 
-        for item in await mshop.to_list(length=20):
-            name = item["name"].lower()
-            if name == item_name:
-                name_ = name
-                if price == 0:
-                    price = 0.9 * item["price"]
-                break
-
-        if name_ is None:
+        if mshop is None:
             return [False, 1]
 
         cost = price * amount
 
-        user_db = await self.db.economy_data.find_one({'userid': str(user.id)})
+        item_amt = await self.check_item_amount(user, item_name)
 
-        if item_name in user_db["inv"]:
-            new_amt = int(user_db["inv"][item_name]) - amount
-            if new_amt < 0:
-                return [False, 2]
-            await self.db.economy_data.update_one({'userid': str(user.id)}, {'$set': {f"inv.{item_name}": int(new_amt)}})
-        else:
+        if item_amt <= 0:
             return [False, 3]
-
-        await self.update_bank(user, cost, "wallet")
+        elif item_amt - amount < 0:
+            return [False, 2]
+        else:
+            new_amt = item_amt - amount
+            await self.change_user_fields(user, f"inv.{item_name}", int(new_amt))
+            await self.update_bank(user, cost, "wallet")
 
         return [True, "Worked"]
 
     async def check_badges(self, user: User) -> str:
         """See what badges the user has."""
-        user_db = await self.db.economy_data.find_one({'userid': str(user.id)})
+        user_db = await self.get_user_data(user)
         badge_text = ""
         try:
             if user_db["badges"]:
@@ -547,7 +546,7 @@ class Economy(Cog):
             else:
                 return "You have no Badges."
         except KeyError:
-            await self.db.economy_data.update_one({'userid': str(user.id)}, {'$set': {"badges": {}}})
+            await self.change_user_fields(user, "badges", {})
 
         return "You have no Badges."
 
