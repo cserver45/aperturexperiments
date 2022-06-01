@@ -486,7 +486,7 @@ class Economy(Cog):
         user_db = await self.get_user_data(user)
 
         try:
-            return int(user_db['items'][str(name)])
+            return int(user_db['inv'][str(name)])
         except KeyError:
             return 0
 
