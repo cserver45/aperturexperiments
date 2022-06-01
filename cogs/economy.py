@@ -433,6 +433,13 @@ class Economy(Cog):
             await ctx.send("Looks like you only found rocks... :rock:")
             return
 
+    """@command(aliases=["lb", "glb", "leaders"])
+    @commands.cooldown(1, 10, commands.BucketType.user)
+    async def leaderboard(self, ctx: Context, field: str) -> None:
+        Show the leaderboard for the entire bot.
+        result = await self.get_lb(ctx, ctx.author, field)
+        await ctx.send(embed=result)"""
+
     # economy stuff backend
 
     @staticmethod
@@ -549,6 +556,28 @@ class Economy(Cog):
             await self.change_user_fields(user, "badges", {})
 
         return "You have no Badges."
+
+    """async def get_lb(self, ctx: Context, user: User, field: str) -> Embed:
+        Return an embed with the global leaderboard.
+        users_db = self.db.economy.find().sort(field, -1)
+
+        e = Embed(title=f"Global Leaderboard by {field}", timestamp=ctx.message.created_at)
+        e.set_footer(text=f"Requested By: {ctx.author.name}", icon_url=ctx.author.avatar_url)
+        i = 1
+
+        async for db_user in users_db:
+            temp_user = ctx.guild.get_member(db_user["userid"])
+            temp_bank = db_user["bank"]
+            if db_user["userid"] == user.id:
+                e.add_field(name=f"{i}: **{temp_user.name}**", value=f"**${temp_bank}**", inline=False)
+            else:
+                e.add_field(name=f"{i}: {temp_user.name}", value=f"${temp_bank}", inline=False)
+            i += 1
+
+            if i == 11:
+                break
+
+        return e"""
 
 
 def setup(bot: Client) -> None:
