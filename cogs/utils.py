@@ -270,18 +270,18 @@ class UtilsA(Cog, name="Utils"):  # type: ignore[call-arg]
         em = Embed(timestamp=ctx.message.created_at)
         em.add_field(name="Invites:", value=f"Will put other invite links here after bot gets out of open beta.\nBut here's the [direct invite link.]({oauth_url(735894171071545484, permissions=Permissions(permissions=3453353158), scopes=('bot', 'applications.commands'))})")
 
-    async def is_cmd_or_cog(self, ctx: Context, cogorcmd: str) -> None:
+    async def _is_cmd_or_cog(self, ctx: Context, cogorcmd: str) -> None:
         """Sees if its a command or a cog."""
         if cogorcmd == "syntax":
-            await self.syntax_help(ctx)
+            await self._syntax_help(ctx)
         elif(command_s := self.bot.get_command(cogorcmd)):
-            await self.cmd_help(ctx, command_s)
+            await self._cmd_help(ctx, command_s)
         elif(cog_s := self.bot.get_cog(cogorcmd.capitalize())):
-            await self.cog_help(ctx, cog_s)
+            await self._cog_help(ctx, cog_s)
         else:
             await ctx.send("That help page does not exist.")
 
-    async def cmd_help(self, ctx: Context, command_s: command) -> None:
+    async def _cmd_help(self, ctx: Context, command_s: command) -> None:
         """Helper function for cmd help page."""
         if command_s.enabled is False:
             await ctx.send(f"{command_s.qualified_name} has been disabled.")
@@ -305,7 +305,7 @@ class UtilsA(Cog, name="Utils"):  # type: ignore[call-arg]
             em.add_field(name="Catergory:", value=command_s.cog_name)
         await ctx.send(embed=em)
 
-    async def cog_help(self, ctx: Context, cog_s: Cog) -> None:
+    async def _cog_help(self, ctx: Context, cog_s: Cog) -> None:
         """Helper function for catergory help page."""
         try:
             prefixs = await self.db.server_settings.find_one({"serverid": str(ctx.guild.id)})
@@ -329,7 +329,7 @@ class UtilsA(Cog, name="Utils"):  # type: ignore[call-arg]
         em = Embed(title=f"{cog_s.qualified_name} Catergory Commands.", description=str(cmd_str))
         await ctx.send(embed=em)
 
-    async def main_help(self, ctx: Context) -> None:
+    async def _main_help(self, ctx: Context) -> None:
         """If no command is given, this is what is given."""
         try:
             prefixs = await self.db.server_settings.find_one({"serverid": str(ctx.guild.id)})
@@ -359,7 +359,7 @@ class UtilsA(Cog, name="Utils"):  # type: ignore[call-arg]
                 else:
                     cmdl.append(cmds.name)
 
-            if cmdl == []:
+            if not cmdl:
                 continue
             else:
                 cmdl.sort()
@@ -368,7 +368,7 @@ class UtilsA(Cog, name="Utils"):  # type: ignore[call-arg]
                 em.add_field(name=f"__{cog}__", value=f"{str(cmd_str)}", inline=False)
         await ctx.send(embed=em)
 
-    async def syntax_help(self, ctx: Context) -> None:
+    async def _syntax_help(self, ctx: Context) -> None:
         """Show info about what the syntax means."""
         em = Embed(title="What means what.", timestamp=ctx.message.created_at,
                    description="""`|` is to show aliases/other ways to say a command.
@@ -384,9 +384,9 @@ class UtilsA(Cog, name="Utils"):  # type: ignore[call-arg]
     async def show_help(self, ctx: Context, cmd: Optional[str]) -> None:
         """Shows this message."""
         if cmd is None:
-            await self.main_help(ctx)
+            await self._main_help(ctx)
         else:
-            await self.is_cmd_or_cog(ctx, cmd)
+            await self._is_cmd_or_cog(ctx, cmd)
 
 
 def setup(bot: Client) -> None:
