@@ -56,9 +56,9 @@ class Economy(Cog):
                         await ctx.send('Either no one answered in time, or no one answered correctly.')
                     else:
                         money = random.randrange(1, 500)
-                        await self.open_account(ctx, ctx.author)
+                        await self._open_account(ctx, ctx.author)
                         await msg.reply(f'{ctx.author.mention} was first! You earned {money} coins.')
-                        await self.update_bank(ctx.author, money)
+                        await self._update_bank(ctx.author, money)
 
                 else:
                     pass
@@ -77,8 +77,8 @@ class Economy(Cog):
         while winner.bot:
             winner = random.choice(guild.members)
         channel = guild.get_channel(861725677367197707)
-        await self.open_account(channel, winner)
-        await self.update_bank(winner, prize)
+        await self._open_account(channel, winner)
+        await self._update_bank(winner, prize)
         await channel.send(f"{winner.name} has won {prize} coins.")
 
     @commands.cooldown(1, 3, commands.BucketType.user)
@@ -86,8 +86,8 @@ class Economy(Cog):
     async def balance(self, ctx: Context, member: Optional[MemberConverter]) -> None:
         """Check your balance."""
         member = member or ctx.author
-        await self.open_account(ctx, member)
-        users = await self.get_user_data(member)
+        await self._open_account(ctx, member)
+        users = await self._get_user_data(member)
         wallet_amt = users['wallet']
         bank_amt = users['bank']
 
@@ -100,24 +100,24 @@ class Economy(Cog):
     @command()
     async def beg(self, ctx: Context) -> None:
         """Why would you beg for money?"""
-        await self.open_account(ctx, ctx.author)
+        await self._open_account(ctx, ctx.author)
         user = ctx.author
 
         earnings = random.randrange(1, 150)
 
         await ctx.send(f'Someone gave you {earnings} coins.')
-        await self.update_bank(user, earnings)
+        await self._update_bank(user, earnings)
 
     @command(aliases=['with', 'frombank'])
     async def withdraw(self, ctx: Context, amount: Union[str, int]) -> None:
         """Get some of that money you put in the bank back into your wallet."""
-        await self.open_account(ctx, ctx.author)
+        await self._open_account(ctx, ctx.author)
 
-        bal = await self.update_bank(ctx.author)
+        bal = await self._update_bank(ctx.author)
 
         if amount in ("all", "max"):
-            await self.update_bank(ctx.author, bal[1])
-            await self.update_bank(ctx.author, -1 * bal[1], "bank")
+            await self._update_bank(ctx.author, bal[1])
+            await self._update_bank(ctx.author, -1 * bal[1], "bank")
             await ctx.send(f'You withdrawed all of your coins ({bal[1]}) from the bank. wallet balance is {bal[0] + bal[1]}')
             return
 
@@ -129,21 +129,21 @@ class Economy(Cog):
             await ctx.send('Amount can\'t be negitive!')
             return
 
-        await self.update_bank(ctx.author, amount)
-        await self.update_bank(ctx.author, -1 * amount, "bank")
+        await self._update_bank(ctx.author, amount)
+        await self._update_bank(ctx.author, -1 * amount, "bank")
         await ctx.send(f'You withdrew {amount} coins from the bank.')
 
     @commands.cooldown(1, 3, commands.BucketType.user)
     @command(aliases=['dep', 'savings'])
     async def deposit(self, ctx: Context, amount: Union[str, int]) -> None:
         """Deposit some money into the bank."""
-        await self.open_account(ctx, ctx.author)
+        await self._open_account(ctx, ctx.author)
 
-        bal = await self.update_bank(ctx.author)
+        bal = await self._update_bank(ctx.author)
 
         if amount in ("all", "max"):
-            await self.update_bank(ctx.author, bal[0], "bank")
-            await self.update_bank(ctx.author, -1 * bal[0])
+            await self._update_bank(ctx.author, bal[0], "bank")
+            await self._update_bank(ctx.author, -1 * bal[0])
             await ctx.send(f'You deposited all of your coins ({bal[0]}) to the bank. bank balance is {bal[0] + bal[1]}')
             return
 
@@ -155,21 +155,21 @@ class Economy(Cog):
             await ctx.send('Amount can\'t be negitive!')
             return
 
-        await self.update_bank(ctx.author, amount, "bank")
-        await self.update_bank(ctx.author, -1 * amount)
+        await self._update_bank(ctx.author, amount, "bank")
+        await self._update_bank(ctx.author, -1 * amount)
         await ctx.send(f'You deposited {amount} coins to the bank.')
 
     @commands.cooldown(1, 5, commands.BucketType.user)
     @command()
     async def send(self, ctx: Context, member: MemberConverter, amount: int) -> None:
         """Give someone some money."""
-        await self.open_account(ctx, ctx.author)
-        await self.open_account(ctx, member)
+        await self._open_account(ctx, ctx.author)
+        await self._open_account(ctx, member)
         if member.id == int(ctx.author.id):
             await ctx.send("You can't send money to yourself.")
             return
 
-        bal = await self.update_bank(ctx.author)
+        bal = await self._update_bank(ctx.author)
 
         amount = int(amount)
         if not member:
@@ -182,22 +182,22 @@ class Economy(Cog):
             await ctx.send('Amount can\'t be negitive!')
             return
 
-        await self.update_bank(ctx.author, -1 * amount, "bank")
-        await self.update_bank(member, amount, "bank")
+        await self._update_bank(ctx.author, -1 * amount, "bank")
+        await self._update_bank(member, amount, "bank")
         await ctx.send(f'You Gave {amount} coins to {member} from your bank.')
 
     @commands.cooldown(1, 60, commands.BucketType.user)
     @command()
     async def rob(self, ctx: Context, member: MemberConverter) -> None:
         """Rob some money out of someone's wallet."""
-        await self.open_account(ctx, ctx.author)
+        await self._open_account(ctx, ctx.author)
         if member.id in (776987330967240716, 735894171071545484):
             await ctx.send("You can't rob me.")
             return
         else:
-            await self.open_account(ctx, member)
+            await self._open_account(ctx, member)
 
-        bal = await self.update_bank(member)
+        bal = await self._update_bank(member)
 
         if not member:
             await ctx.send('You need to specify a member!')
@@ -208,17 +208,17 @@ class Economy(Cog):
 
         earnings = random.randrange(0, bal[0])
 
-        await self.update_bank(ctx.author, earnings)
-        await self.update_bank(member, -1 * earnings)
+        await self._update_bank(ctx.author, earnings)
+        await self._update_bank(member, -1 * earnings)
         await ctx.send(f'You robbed {member} {earnings} coins.')
 
     @commands.cooldown(1, 3, commands.BucketType.user)
     @command()
     async def slots(self, ctx: Context, amount: int) -> None:
         """Play a Slots machine."""
-        await self.open_account(ctx, ctx.author)
+        await self._open_account(ctx, ctx.author)
 
-        bal = await self.update_bank(ctx.author)
+        bal = await self._update_bank(ctx.author)
 
         amount = int(amount)
         if amount > bal[0]:
@@ -237,22 +237,22 @@ class Economy(Cog):
         em = Embed(title='Slots machine', colour=Colour.orange(), timestamp=ctx.message.created_at)
         em.add_field(name='Results:', value=f'Your Results were: {final[0]}, {final[1]}, {final[2]}', inline=False)
         if final[0] == ':seven:' and final[1] == ':seven:' and final[2] == ':seven:':
-            await self.update_bank(ctx.author, 5 * amount)
+            await self._update_bank(ctx.author, 5 * amount)
             em.add_field(name='You won the jackpot!', value=f'You won {5*amount} coins!', inline=False)
             await ctx.send(embed=em)
             return
         elif final[0] == final[1] and final[0] == final[2] and final[1] == final[2]:
-            await self.update_bank(ctx.author, 3 * amount)
+            await self._update_bank(ctx.author, 3 * amount)
             em.add_field(name='You won!', value=f'You won {3*amount} coins!', inline=False)
             await ctx.send(embed=em)
             return
         elif final[0] == final[1] or final[0] == final[2] or final[2] == final[1]:
-            await self.update_bank(ctx.author, 2 * amount)
+            await self._update_bank(ctx.author, 2 * amount)
             em.add_field(name='You won!', value=f'You won {2*amount} coins!', inline=False)
             await ctx.send(embed=em)
             return
         else:
-            await self.update_bank(ctx.author, -1 * amount)
+            await self._update_bank(ctx.author, -1 * amount)
             em.add_field(name='You lost', value='Maybe try again?', inline=False)
             await ctx.send(embed=em)
 
@@ -274,8 +274,8 @@ class Economy(Cog):
     @command()
     async def badges(self, ctx: Context, user: Optional[User]) -> None:
         """See what badges you currently have."""
-        await self.open_account(ctx, user or ctx.author)
-        result = await self.check_badges(user or ctx.author)
+        await self._open_account(ctx, user or ctx.author)
+        result = await self._check_badges(user or ctx.author)
         em = Embed(title=f"{ctx.author.display_name}\'s Badges",
                    timestamp=ctx.message.created_at,
                    description=result
@@ -288,17 +288,17 @@ class Economy(Cog):
         """Add coins to someones wallet/bank (Developers only)."""
         if member is None:
             member = ctx.author
-        await self.open_account(ctx, member)
-        await self.update_bank(member, int(ammount))
+        await self._open_account(ctx, member)
+        await self._update_bank(member, int(ammount))
         await ctx.send(f'Added {ammount} coins to {member}.')
 
     @command()
     async def buy(self, ctx: Context, item: str, amount: Optional[int]) -> None:
         """Buy something."""
         amount = amount or 1  # stop it mypy
-        await self.open_account(ctx, ctx.author)
+        await self._open_account(ctx, ctx.author)
 
-        res = await self.buy_this(ctx.author, item, amount)
+        res = await self._buy_this(ctx.author, item, amount)
 
         if not res[0]:
             if res[1] == 1:
@@ -313,11 +313,11 @@ class Economy(Cog):
     @command(aliases=["inv", "inventory"])
     async def bag(self, ctx: Context) -> None:
         """See what you have bought."""
-        await self.open_account(ctx, ctx.author)
+        await self._open_account(ctx, ctx.author)
 
         em = Embed(title="Bag", timestamp=ctx.message.created_at)
 
-        user_db = await self.get_user_data(ctx.author)
+        user_db = await self._get_user_data(ctx.author)
         for item, amt in user_db["inv"].items():
             name = item
             amount = amt
@@ -330,9 +330,9 @@ class Economy(Cog):
     async def sell(self, ctx: Context, item: str, amount: Optional[int]) -> None:
         """Sell something you have in your bag."""
         amount = amount or 1  # mypy shutup already
-        await self.open_account(ctx, ctx.author)
+        await self._open_account(ctx, ctx.author)
 
-        res = await self.sell_this(ctx.author, item, amount)
+        res = await self._sell_this(ctx.author, item, amount)
 
         if not res[0]:
             if res[1] == 1:
@@ -362,8 +362,8 @@ class Economy(Cog):
             await ctx.send("That is not a valid option.")
             return
 
-        await self.open_account(ctx, ctx.author)
-        user_db = await self.get_user_data(ctx.author)
+        await self._open_account(ctx, ctx.author)
+        user_db = await self._get_user_data(ctx.author)
 
         if int(bet) < 1:
             await ctx.send("You can't bet a negative amount of money.")
@@ -375,7 +375,7 @@ class Economy(Cog):
         message = await ctx.send("The dice hit the table and slowly fall into place...")
         old_bet = deepcopy(bet)
         await asyncio.sleep(2)
-        result = sum(self.roll_dice())
+        result = sum(self._roll_dice())
         if result < 7:
             outcome = ("low", "lo")
         elif result > 7:
@@ -396,14 +396,14 @@ class Economy(Cog):
             bet *= -1
 
         await message.edit(content=msg + f"\nYour choice was {choice}. You {'won' if won is True else 'lost'} {old_bet if won is False else int(bet)} coins.")
-        await self.update_bank(ctx.author, int(bet))
+        await self._update_bank(ctx.author, int(bet))
 
     @command()
     async def dive(self, ctx: Context) -> None:
         """Dive and see what people dropped over boats."""
-        await self.open_account(ctx, ctx.author)
+        await self._open_account(ctx, ctx.author)
 
-        item_amt = await self.check_item_amount(ctx.author, "mask")
+        item_amt = await self._check_item_amount(ctx.author, "mask")
 
         if item_amt <= 0:
             await ctx.send("You have no diving masks in your invintory right now. Go buy some if you actualy want to dive.")
@@ -415,17 +415,17 @@ class Economy(Cog):
 
         if with_mask:
             amt = random.randint(1, 1500)
-            await self.update_bank(ctx.author, amt)
+            await self._update_bank(ctx.author, amt)
             await ctx.send(f"Hey look you found some money ({amt} coin(s)), and a free mask.")
             return
         elif probability >= 35:
             amt = random.randint(2, 750)
-            await self.update_bank(ctx.author, amt)
-            await self.change_user_fields(ctx.author, "inv.mask", (item_amt - 1))
+            await self._update_bank(ctx.author, amt)
+            await self._change_user_fields(ctx.author, "inv.mask", (item_amt - 1))
             await ctx.send(f"Looks like you found a small bit of money ({amt} coins).")
             return
         else:
-            await self.change_user_fields(ctx.author, "inv.mask", (item_amt - 1))
+            await self._change_user_fields(ctx.author, "inv.mask", (item_amt - 1))
             await ctx.send("Looks like you only found rocks... :rock:")
             return
 
@@ -439,13 +439,13 @@ class Economy(Cog):
     # economy stuff backend
 
     @staticmethod
-    def roll_dice() -> Tuple:
+    def _roll_dice() -> Tuple:
         """Roll 2 dice."""
         return random.randint(1, 6), random.randint(1, 6)
 
-    async def open_account(self, ctx: Context, user: User) -> bool:
+    async def _open_account(self, ctx: Context, user: User) -> bool:
         """Register an account in the db."""
-        users = await self.get_user_data(user)
+        users = await self._get_user_data(user)
         if users is not None:
             return False
 
@@ -453,23 +453,23 @@ class Economy(Cog):
         await ctx.send(f"{user.name} has been registired in the economy system.")
         return True
 
-    async def update_bank(self, user: User, change: int = 0, mode: str = "wallet") -> List[int]:
+    async def _update_bank(self, user: User, change: int = 0, mode: str = "wallet") -> List[int]:
         """Update some part of the user's bank info."""
         change = int(change)
         if change != 0:
-            old_document = await self.get_user_data(user)
+            old_document = await self._get_user_data(user)
             new_num = old_document[mode] + int(change)
-            await self.change_user_fields(user, mode, new_num)
-        updated_data = await self.get_user_data(user)
+            await self._change_user_fields(user, mode, new_num)
+        updated_data = await self._get_user_data(user)
         bal = [updated_data["wallet"], updated_data["bank"]]
 
         return bal
 
-    async def get_user_data(self, user: User) -> Any:
+    async def _get_user_data(self, user: User) -> Any:
         """Get data that is stored about that user. Returns None if that user does not exist in the db."""
         return await self.db.economy_data.find_one({"userid": str(user.id)})
 
-    async def change_user_fields(self, user: User, field: str, value: Union[str, int, dict]) -> bool:
+    async def _change_user_fields(self, user: User, field: str, value: Union[str, int, dict]) -> bool:
         """Change a value in the database."""
         try:
             await self.db.economy_data.update_one({'userid': str(user.id)}, {'$set': {field: value}})
@@ -477,16 +477,16 @@ class Economy(Cog):
         except ValueError:
             return False
 
-    async def check_item_amount(self, user: User, name: str) -> int:
+    async def _check_item_amount(self, user: User, name: str) -> int:
         """Does a user own this item?"""
-        user_db = await self.get_user_data(user)
+        user_db = await self._get_user_data(user)
 
         try:
             return int(user_db['inv'][str(name)])
         except KeyError:
             return 0
 
-    async def buy_this(self, user: User, item_name: str, amount: int) -> List[Union[bool, str, int]]:
+    async def _buy_this(self, user: User, item_name: str, amount: int) -> List[Union[bool, str, int]]:
         """Buy something."""
         item_name = item_name.lower()
         mshop = await self.db.shop_data.find_one({"name": str(item_name.capitalize())})
@@ -496,24 +496,24 @@ class Economy(Cog):
 
         price = mshop["price"]
         cost = price * amount
-        bal = await self.update_bank(user)
+        bal = await self._update_bank(user)
 
         if bal[0] < int(cost):
             return [False, 2]
 
-        user_db = await self.get_user_data(user)
+        user_db = await self._get_user_data(user)
 
         if item_name in user_db["inv"]:
             new_amt = int(user_db["inv"][item_name]) + amount
-            await self.change_user_fields(user, f"inv.{item_name}", int(new_amt))
+            await self._change_user_fields(user, f"inv.{item_name}", int(new_amt))
         else:
-            await self.change_user_fields(user, f"inv.{item_name}", int(amount))
+            await self._change_user_fields(user, f"inv.{item_name}", int(amount))
 
-        await self.update_bank(user, cost * -1, "wallet")
+        await self._update_bank(user, cost * -1, "wallet")
 
         return [True, "Worked"]
 
-    async def sell_this(self, user: User, item_name: str, amount: int, price: int = 0) -> List[Union[bool, int, str]]:
+    async def _sell_this(self, user: User, item_name: str, amount: int, price: int = 0) -> List[Union[bool, int, str]]:
         """Sell something."""
         price = price or 0  # mypy sigh
         item_name = item_name.lower()
@@ -524,7 +524,7 @@ class Economy(Cog):
 
         cost = price * amount
 
-        item_amt = await self.check_item_amount(user, item_name)
+        item_amt = await self._check_item_amount(user, item_name)
 
         if item_amt <= 0:
             return [False, 3]
@@ -532,14 +532,14 @@ class Economy(Cog):
             return [False, 2]
         else:
             new_amt = item_amt - amount
-            await self.change_user_fields(user, f"inv.{item_name}", int(new_amt))
-            await self.update_bank(user, cost, "wallet")
+            await self._change_user_fields(user, f"inv.{item_name}", int(new_amt))
+            await self._update_bank(user, cost, "wallet")
 
         return [True, "Worked"]
 
-    async def check_badges(self, user: User) -> str:
+    async def _check_badges(self, user: User) -> str:
         """See what badges the user has."""
-        user_db = await self.get_user_data(user)
+        user_db = await self._get_user_data(user)
         badge_text = ""
         try:
             if user_db["badges"]:
@@ -549,7 +549,7 @@ class Economy(Cog):
             else:
                 return "You have no Badges."
         except KeyError:
-            await self.change_user_fields(user, "badges", {})
+            await self._change_user_fields(user, "badges", {})
 
         return "You have no Badges."
 
