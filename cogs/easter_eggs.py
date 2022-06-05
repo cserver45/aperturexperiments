@@ -7,6 +7,8 @@ from discord.ext.commands import Cog, Context, command
 class EasterEggs(Cog):
     """Easter egg parent class."""
 
+    __slots__ = ("bot",)
+
     def __init__(self, bot: Client) -> None:
         """Init function."""
         self.bot = bot

@@ -9,6 +9,8 @@ from discord.ext.commands import BucketType, Cog, Context, command, cooldown
 class Animals(Cog):
     """Animals Cog parent class."""
 
+    __slots__ = ("bot", "session")
+
     def __init__(self, bot: Client) -> None:
         """Init statement."""
         self.bot = bot

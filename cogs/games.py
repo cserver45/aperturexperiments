@@ -14,6 +14,8 @@ from .lib.enums import RPS  # pylint: disable=E0402
 class RPSParser:
     """Parser for rock, paper, scissors."""
 
+    __slots__ = ("rpschoice", "choice")
+
     def __init__(self, rpschoice: str):
         """Init code."""
         rpschoice = rpschoice.lower()
@@ -29,6 +31,8 @@ class RPSParser:
 
 class Games(Cog):
     """Parent class."""
+
+    __slots__ = ("bot", "db", "session")
 
     def __init__(self, bot: Client) -> None:
         """Init Function."""

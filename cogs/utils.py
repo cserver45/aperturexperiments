@@ -29,6 +29,8 @@ def check_if_it_is_me() -> commands.check:
 class UtilsA(Cog, name="Utils"):  # type: ignore[call-arg]
     """Utils Commands Parent Cog."""
 
+    __slots__ = ("bot", "commands", "bot_version", "db")
+
     def __init__(self, bot: Client):
         """Init function."""
         self.bot = bot

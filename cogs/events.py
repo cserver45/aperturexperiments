@@ -15,6 +15,8 @@ from discord.utils import find, oauth_url
 class AutoReporterEvents(Cog):
     """Auto reporter and custom events parent class."""
 
+    __slots__ = ("bot", "webhook")
+
     def __init__(self, bot: Client) -> None:
         """Init Function."""
         self.bot = bot

@@ -13,6 +13,8 @@ from .lib.converters import BannedUser  # pylint: disable=E0402
 class Moderation(Cog):
     """Moderation Cog Parent class."""
 
+    __slots__ = ("bot",)
+
     def __init__(self, bot: Client) -> None:
         """Init function."""
         self.bot = bot

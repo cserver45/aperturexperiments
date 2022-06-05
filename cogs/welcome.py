@@ -7,6 +7,8 @@ from discord.ext.commands import Cog, MemberConverter
 class JoinLeave(Cog):
     """Parent class."""
 
+    __slots__ = ('bot',)
+
     def __init__(self, bot: Client):
         """Init function."""
         self.bot = bot

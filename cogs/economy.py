@@ -19,6 +19,8 @@ phrases = ("gib me money", "free money", "noooooooo")
 class Economy(Cog):
     """Economy Cog parent class."""
 
+    __slots__ = ("bot", "db")
+
     def __init__(self, bot: Client) -> None:
         """Init function."""
         self.bot = bot

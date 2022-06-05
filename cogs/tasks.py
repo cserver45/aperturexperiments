@@ -10,6 +10,8 @@ from discord.ext.commands import Cog
 class TasksCog(Cog):
     """Parent class."""
 
+    __slots__ = ("bot", "db", "status")
+
     def __init__(self, bot: Client):
         """Init Function."""
         self.bot = bot

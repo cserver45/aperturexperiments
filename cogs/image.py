@@ -15,6 +15,8 @@ from PIL import Image, ImageDraw, ImageFont
 class ImageDiscord(Cog, name="Image"):  # type: ignore[call-arg]
     """Image cog parent class."""
 
+    __slots__ = ("bot",)
+
     def __init__(self, bot: Client):
         """Init Function."""
         self.bot = bot
