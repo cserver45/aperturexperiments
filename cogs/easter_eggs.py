@@ -3,6 +3,9 @@ from colorama import Back, Style
 from discord import Client, Colour, Embed, Message, NotFound
 from discord.ext.commands import Cog, Context, command
 
+# discord.py commands must have self included, even if its not used
+# pylint: disable=R0201
+
 
 class EasterEggs(Cog):
     """Easter egg parent class."""

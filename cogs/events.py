@@ -66,18 +66,18 @@ class AutoReporterEvents(Cog):
         elif isinstance(exc, MissingPermissions):
             missing = [perm.replace('_', ' ').replace('guild', 'server').title() for perm in exc.missing_perms]
             if len(missing) > 2:
-                fmt = '{}, and {}'.format("**, **".join(missing[:-1]), missing[-1])
+                fmt = f'{"**, **".join(missing[:-1])}, and {missing[-1]}'
             else:
                 fmt = ' and '.join(missing)
-            _message = 'You need the **{}** permission(s) to use the {} command.'.format(fmt, ctx.command.qualified_name)
+            _message = f'You need the **{fmt}** permission(s) to use the {ctx.command.qualified_name} command.'
             await ctx.send(_message)
         elif isinstance(exc, BotMissingPermissions):
             missing = [perm.replace('_', ' ').replace('guild', 'server').title() for perm in exc.missing_perms]
             if len(missing) > 2:
-                fmt = '{}, and {}'.format("**, **".join(missing[:-1]), missing[-1])
+                fmt = f'{"**, **".join(missing[:-1])}, and {missing[-1]}'
             else:
                 fmt = ' and '.join(missing)
-            _message = 'I need the **{}** permission(s) to run the {} command.'.format(fmt, ctx.command.qualified_name)
+            _message = f'I need the **{fmt}** permission(s) to run the {ctx.command.qualified_name} command.'
             await ctx.send(_message)
         elif ctx.command and ctx.command.has_error_handler():
             pass
