@@ -24,8 +24,9 @@ class AutoReporterEvents(Cog):
                                         adapter=AsyncWebhookAdapter(bot.session)
                                         )
 
+    @staticmethod
     @Cog.listener()
-    async def on_ready(self) -> None:
+    async def on_ready() -> None:
         """Called when cog is loaded and ready."""
         print(Back.GREEN + Style.BRIGHT + "Events/Auto Reporter Cog loaded." + Style.RESET_ALL)
 
@@ -44,7 +45,7 @@ class AutoReporterEvents(Cog):
     async def on_command_error(self, ctx: Context, exc: Exception) -> None:
         """Filter errors before calling the auto report job."""
         if isinstance(exc, CommandOnCooldown):
-            pass
+            await ctx.send(f"{ctx.command.name} is on cooldown. You can use it again in {round(exc.retry_after)} seconds.")
         elif isinstance(exc, CommandNotFound):
             pass
         elif isinstance(exc, DisabledCommand):
@@ -83,8 +84,9 @@ class AutoReporterEvents(Cog):
         else:
             self.bot.dispatch("auto_report", ctx, exc)
 
+    @staticmethod
     @Cog.listener()
-    async def on_guild_join(self, guild: Guild) -> None:
+    async def on_guild_join(guild: Guild) -> None:
         """Call when the bot joins a guild."""
         system_channel = guild.system_channel
         offtopic = find(lambda x: x.name == "offtopic", guild.text_channels)

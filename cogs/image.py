@@ -21,8 +21,9 @@ class ImageDiscord(Cog, name="Image"):  # type: ignore[call-arg]
         """Init Function."""
         self.bot = bot
 
+    @staticmethod
     @Cog.listener()
-    async def on_ready(self) -> None:
+    async def on_ready() -> None:
         """Called when cog is loaded and ready."""
         print(Back.GREEN + Style.BRIGHT + "Image Cog loaded." + Style.RESET_ALL)
 

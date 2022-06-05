@@ -14,12 +14,14 @@ class EasterEggs(Cog):
         self.bot = bot
 
     @Cog.listener()
-    async def on_ready(self) -> None:
+    @staticmethod
+    async def on_ready() -> None:
         """Call when the Cog is loaded."""
         print(Back.GREEN + Style.BRIGHT + "Easter Eggs loaded. Shhhhhhhhhhhhh..." + Style.RESET_ALL)
 
     @Cog.listener()
-    async def on_message(self, msg: Message) -> None:
+    @staticmethod
+    async def on_message(msg: Message) -> None:
         """Call when a message is sent."""
         if msg.author.bot:
             return

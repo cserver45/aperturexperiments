@@ -8,7 +8,7 @@ from typing import Any, List, Optional, Tuple, Union
 from colorama import Back, Style
 from discord import Client, Colour, Embed, Message, User
 from discord.ext import commands, tasks
-from discord.ext.commands import (Cog, CommandOnCooldown, Context,
+from discord.ext.commands import (Cog, Context,
                                    MemberConverter, command)
 
 banned_commands = ("deposit", "withdraw", "balance", "send", "shop", "bag", "badges")
@@ -66,12 +66,6 @@ class Economy(Cog):
                 pass
         except AttributeError:
             pass
-
-    @Cog.listener()
-    async def on_command_error(self, ctx: Context, error: Exception) -> None:
-        """Called when an error is encounted with the bot."""
-        if isinstance(error, CommandOnCooldown):
-            await ctx.send(f"{ctx.command.name} is on cooldown. You can use it again in {round(error.retry_after)} seconds.")
 
     # economy raffle stuff
     @tasks.loop(hours=12)

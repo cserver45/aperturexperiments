@@ -19,8 +19,9 @@ class Moderation(Cog):
         """Init function."""
         self.bot = bot
 
+    @staticmethod
     @Cog.listener()
-    async def on_ready(self) -> None:
+    async def on_ready() -> None:
         """Called when this cog is ready."""
         print(Back.GREEN + Style.BRIGHT + "Moderation Cog Loaded." + Style.RESET_ALL)
 

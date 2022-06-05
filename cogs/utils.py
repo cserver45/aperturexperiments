@@ -39,8 +39,9 @@ class UtilsA(Cog, name="Utils"):  # type: ignore[call-arg]
         self.bot_version = str(self.bot.config["main"]["version"])
         self.db = bot.db
 
+    @staticmethod
     @Cog.listener()
-    async def on_ready(self) -> None:
+    async def on_ready() -> None:
         """Called when Utils Cog is loaded."""
         print(Back.GREEN + Style.BRIGHT + "Utils Cog Loaded." + Style.RESET_ALL)
 

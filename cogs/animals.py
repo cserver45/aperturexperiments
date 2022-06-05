@@ -16,7 +16,8 @@ class Animals(Cog):
         self.session = bot.session
 
     @Cog.listener()
-    async def on_ready(self) -> None:
+    @staticmethod
+    async def on_ready() -> None:
         """Call when cog is loaded and ready."""
         print(Back.GREEN + Style.BRIGHT + "Animal Cog loaded." + Style.RESET_ALL)
 
