@@ -9,6 +9,9 @@ from discord.ext.commands import Cog, Context, Greedy, MemberConverter, command
 
 from .lib.converters import BannedUser  # pylint: disable=E0402
 
+# discord.py commands must have self included, even if its not used
+# pylint: disable=R0201
+
 
 class Moderation(Cog):
     """Moderation Cog Parent class."""

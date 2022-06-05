@@ -10,6 +10,9 @@ from discord.ext.commands import Cog, Context, MemberConverter, command
 
 from .lib.enums import RPS  # pylint: disable=E0402
 
+# discord.py commands must have self included, even if its not used
+# pylint: disable=R0201
+
 
 class RPSParser:
     """Parser for rock, paper, scissors."""

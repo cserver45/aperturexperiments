@@ -11,6 +11,9 @@ from discord import Client, Embed, File
 from discord.ext.commands import Cog, Context, MemberConverter, command
 from PIL import Image, ImageDraw, ImageFont
 
+# discord.py commands must have self included, even if its not used
+# pylint: disable=R0201
+
 
 class ImageDiscord(Cog, name="Image"):  # type: ignore[call-arg]
     """Image cog parent class."""

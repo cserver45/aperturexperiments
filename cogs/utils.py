@@ -18,6 +18,9 @@ from discord.ext.commands import (Cog, Context, ExtensionNotFound,
 from discord.utils import oauth_url
 from psutil import Process
 
+# discord.py commands must have self included, even if its not used
+# pylint: disable=R0201
+
 
 def check_if_it_is_me() -> commands.check:
     """Check if its me (cserver)."""
