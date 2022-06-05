@@ -1,5 +1,4 @@
 """Animals Cog."""
-import aiohttp
 import orjson
 from colorama import Back, Style
 from discord import Client
@@ -14,7 +13,7 @@ class Animals(Cog):
     def __init__(self, bot: Client) -> None:
         """Init statement."""
         self.bot = bot
-        self.session = aiohttp.ClientSession(json_serialize=orjson.dumps)  # type: ignore
+        self.session = bot.session
 
     @Cog.listener()
     async def on_ready(self) -> None:
