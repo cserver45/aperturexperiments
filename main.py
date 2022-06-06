@@ -175,15 +175,18 @@ class Bot(commands.AutoShardedBot):
             print(" ok")
             print(Back.GREEN + Style.BRIGHT + "Bot restarted and created a new session." + Style.RESET_ALL)
 
-    async def on_resumed(self) -> None:
+    @staticmethod
+    async def on_resumed() -> None:
         """Call when the session is resumed."""
         print(Back.GREEN + Style.BRIGHT + "Bot resumed a session with discord (restarted)." + Style.RESET_ALL)
 
-    async def on_connect(self) -> None:
+    @staticmethod
+    async def on_connect() -> None:
         """Call when the bot connects to discord."""
         print(Back.GREEN + Style.BRIGHT + "Bot connecting to discord..." + Style.RESET_ALL, end='')
 
-    async def on_disconnect(self) -> None:
+    @staticmethod
+    async def on_disconnect() -> None:
         """Call when bot gets disconnected from discord."""
         print(Back.GREEN + Style.BRIGHT + "Bot Disconnected from discord." + Style.RESET_ALL)
 
@@ -265,7 +268,7 @@ class Bot(commands.AutoShardedBot):
 
     # pylint: enable=W0221
 
-    async def cmd_get_prefix(self, bot: discord.Client, message: discord.Message) -> Union[str, list]:
+    async def cmd_get_prefix(self, client: discord.Client, message: discord.Message) -> Union[str, list]:
         """Get the prefix for that server."""
         if not self.is_ready:
             self.wait_until_ready()
@@ -275,7 +278,7 @@ class Bot(commands.AutoShardedBot):
 
         prefixs = await self.db.server_settings.find_one({"serverid": str(message.guild.id)})
         if prefixs is None:
-            await bot.db.server_settings.insert_one({"serverid": str(message.guild.id), "prefix": ".", "automod": 0, "levelsys": 0})
+            await client.db.server_settings.insert_one({"serverid": str(message.guild.id), "prefix": ".", "automod": 0, "levelsys": 0})
             # set the data to what was just put into the db (gets rid of an extra db call)
             prefixs = {"serverid": str(message.guild.id), "prefix": ".", "automod": 0, "levelsys": 0}
 
