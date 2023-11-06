@@ -11,11 +11,9 @@ import warnings
 from typing import Tuple, Union
 
 import aiohttp
-import asyncpraw
 import discord
 import motor.motor_asyncio
 import uvloop
-import orjson
 from colorama import Back, Style
 from discord.ext import commands  # pylint: disable=E0611
 from discord.ext.commands import (CommandNotFound, CommandOnCooldown, Context,
@@ -84,7 +82,7 @@ class Bot(commands.AutoShardedBot):
         # to get the console to shutup about how session is defined in a sync function
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
-            self.session = aiohttp.ClientSession(json_serialize=orjson.dumps, loop=asyncio.get_event_loop())
+            self.session = aiohttp.ClientSession(loop=asyncio.get_event_loop())
 
         # configuration file parser
         self.config = configparser.ConfigParser()
@@ -124,12 +122,6 @@ class Bot(commands.AutoShardedBot):
         # mongodb stuff
         client = motor.motor_asyncio.AsyncIOMotorClient(str(self.config["mongodb"]["passwd"]), io_loop=asyncio.get_event_loop())
         self.db = client.aperturelabsbot
-
-        # next, define reddit (for image cog specifically)
-        self.reddit = asyncpraw.Reddit(client_id=self.config["reddit"]["rid"],
-                                       client_secret=self.config["reddit"]["secret"],
-                                       user_agent=self.config["reddit"]["ua"]
-                                       )
 
         # init the parent class (AutoShardedBot)
         super().__init__(*args,

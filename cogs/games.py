@@ -2,7 +2,6 @@
 from random import choice, randint
 from typing import Optional
 
-import orjson
 import aiofiles
 from colorama import Back, Style
 from discord import Client, Color, Embed, Message

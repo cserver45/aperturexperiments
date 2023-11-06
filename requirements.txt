@@ -1,12 +1,8 @@
-discord.py[voice]
+discord.py
 colorama
 motor
 aiofiles
-aiodns
 aiohttp[speedups]
-cchardet
-pillow
 humanize
 psutil
 uvloop
-orjson
