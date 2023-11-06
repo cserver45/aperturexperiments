@@ -148,37 +148,6 @@ class UtilsA(Cog, name="Utils"):  # type: ignore[call-arg]
         cmd.enabled = not cmd.enabled
         await ctx.send(f"I have {'enabled' if cmd.enabled else 'disabled'} {cmd.qualified_name} for you.")
 
-    @command(hidden=True)
-    @commands.is_owner()
-    async def time(self, ctx: Context, *, command_str: str) -> None:
-        """See the time it takes a command to run. Can only be used by cserver#3402."""
-        cmd_ctx = await self.bot.copy_context_with(ctx, content=ctx.prefix + command_str)
-
-        if cmd_ctx.command is None:
-            await ctx.send(f'Command "{cmd_ctx.invoked_with}" is not found.')
-            return
-        start = time()
-        await cmd_ctx.command.invoke(cmd_ctx)
-        end = time()
-
-        await ctx.send(f"Command `{cmd_ctx.command.qualified_name}` finished in {end - start:.3f}s.")
-
-    @command(aliases=['cprefix'])
-    @check_any(commands.has_permissions(manage_guild=True), check_if_it_is_me())
-    @guild_only()
-    @commands.cooldown(1, 15, commands.BucketType.guild)
-    async def changeprefix(self, ctx: Context, nprefix: str) -> None:
-        """Change the prefix of that server."""
-        if isinstance(ctx.message.channel, DMChannel):
-            await ctx.send("You can't use this command inside a DM.")
-        else:
-            if len(nprefix) > 32:
-                await ctx.send("Prefix's cannot be longer then 32 characters.")
-                return
-
-            await self.db.server_settings.update_one({'serverid': str(ctx.guild.id)}, {'$set': {'prefix': nprefix}})
-            await ctx.send(f'Prefix changed to `{nprefix}`')
-
     @command(aliases=['pingt'])
     async def ping(self, ctx: Context) -> None:
         """Get ping time to websocket @ discord."""

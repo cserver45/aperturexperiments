@@ -4,7 +4,6 @@
 import argparse
 import asyncio
 import configparser
-import copy
 import logging
 import os
 import warnings
@@ -138,17 +137,6 @@ class Bot(commands.AutoShardedBot):
         print(train)
         print(Back.GREEN + Style.BRIGHT + "Bot is starting up..." + Style.RESET_ALL)
 
-    async def send_syntax_help(self, ctx: Context) -> None:
-        """Send the syntax to the current channel. Mostly called by the error handler."""
-        cmd = self.get_command(ctx.command.name)
-        syntax = self.syntax(cmd)
-        em = discord.Embed(title=f"You provided an invalid input for {cmd.qualified_name}.",
-                            description=f"Here is the syntax for {cmd.qualified_name}:\n{syntax}",
-                            timestamp=ctx.message.created_at
-                           )
-        em.set_footer(text=f"You can also look at the help page for {cmd.qualified_name} if you need to see the syntax again.")
-        await ctx.send(embed=em)
-
     async def on_ready(self) -> None:
         """Call when the bot is ready."""
         if not self.on_ready_mode:
@@ -182,27 +170,12 @@ class Bot(commands.AutoShardedBot):
         """Call when bot gets disconnected from discord."""
         print(Back.GREEN + Style.BRIGHT + "Bot Disconnected from discord." + Style.RESET_ALL)
 
-    async def on_message(self, message: discord.Message) -> None:
-        """Call when a message is sent."""
-        if message.author.bot:
-            pass
-        else:
-            await self.process_commands(message)
-
     async def on_command_error(self, _: Context, error: Exception) -> None:  # pylint: disable=W0221
         """Call when a command has an error."""
         if isinstance(error, self.IGNORE_ERRS):
             pass
         else:
             raise CommandError(error) from error
-
-    async def process_commands(self, message: discord.Message) -> None:
-        """Process commands and invokes them."""
-        if message.author.bot:
-            return
-
-        ctx = await self.get_context(message)
-        await self.invoke(ctx)
 
     @staticmethod
     def convert_time_custom(time: str) -> int:
@@ -228,7 +201,7 @@ class Bot(commands.AutoShardedBot):
         testbannedcogs = ("ticket.py", "welcome.py")
 
         for f in os.listdir("./cogs"):
-            if f.endswith('.py') and "voteman.py" not in f:
+            if f.endswith('.py'):
                 if self.argus.token == 'testtoken':
                     if f in testbannedcogs:
                         continue
@@ -259,49 +232,6 @@ class Bot(commands.AutoShardedBot):
         super().run(token, reconnect=True)
 
     # pylint: enable=W0221
-
-    async def cmd_get_prefix(self, client: discord.Client, message: discord.Message) -> Union[str, list]:
-        """Get the prefix for that server."""
-        if not self.is_ready:
-            self.wait_until_ready()
-
-        if isinstance(message.channel, discord.DMChannel):
-            return ["."]
-
-        prefixs = await self.db.server_settings.find_one({"serverid": str(message.guild.id)})
-        if prefixs is None:
-            await client.db.server_settings.insert_one({"serverid": str(message.guild.id), "prefix": ".", "automod": 0, "levelsys": 0})
-            # set the data to what was just put into the db (gets rid of an extra db call)
-            prefixs = {"serverid": str(message.guild.id), "prefix": ".", "automod": 0, "levelsys": 0}
-
-        if str(message.author.id) in ("551448780784795651", "732039991512793239"):
-            if prefixs['prefix'] == "." or prefixs['prefix'] == "":
-                return [".", ""]
-            return [".", str(prefixs['prefix']), ""]
-        else:
-            return str(prefixs['prefix'])
-
-    @staticmethod
-    def syntax(command_s: commands.Command) -> str:
-        """Syntax for cmd help page."""
-        cmd_and_aliases = "|".join([str(command_s), *command_s.aliases])
-
-        return f"```{cmd_and_aliases} {command_s.signature}```"
-
-    @staticmethod
-    async def copy_context_with(ctx: Context, *, author: Union[discord.User, bool] = None, channel: Union[discord.abc.GuildChannel, discord.abc.Messageable] = None, **kwargs: dict) -> Context:
-        """Make a new copy of the ctx with some changed properties (optional)."""
-        # copy the message and update the attributes
-        alt_message: discord.Message = copy.copy(ctx.message)
-        alt_message._update(kwargs)  # pylint: disable=protected-access
-
-        if author is not None:
-            alt_message.author = author
-        if channel is not None:
-            alt_message.channel = channel
-
-        # obtain and return a context of the same type
-        return await ctx.bot.get_context(alt_message, cls=type(ctx))
 
     @property
     def command_count(self) -> int:
