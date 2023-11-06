@@ -111,15 +111,6 @@ class Games(Cog):
             await ctx.reply(content=f"We're Even! We both got {player_c.value}")
 
     @command()
-    async def throw(self, ctx: Context) -> None:
-        """Isin't throwing stuff cool?"""
-        async with aiofiles.open("throwthings.json", mode="r") as f:
-            result = orjson.loads(await f.read())
-
-        thing = choice(result)
-        await ctx.send(f"Threw {thing} at some people nearby.")
-
-    @command()
     async def rpstats(self, ctx: Context) -> None:
         """Show statistics about your rock, paper, scissors games."""
         user = await self.db.rpstats.find_one({"userid": ctx.author.id})
@@ -134,22 +125,12 @@ class Games(Cog):
         e.add_field(name="Tie:", value=str(user["tie"]))
         e.add_field(name="Lost:", value=str(user["lost"]))
         await ctx.send(embed=e)
-
-    @command(name="8ball", aliases=['eightball'])
-    async def _8ball(self, ctx: Context, *, question: str) -> None:
-        """Its an 8ball. That's it."""
-        async with aiofiles.open("8ball.json", mode="r") as f:
-            responses = orjson.loads(await f.read())
-        await ctx.send(f'Question: {question}\nAnswer: {choice(responses)}')
-
-    @command()
-    async def quote(self, ctx: Context) -> None:
-        """Get a random quote."""
-        async with aiofiles.open("quotes.json", mode="r") as f:
-            results = orjson.loads(await f.read())
-        numbelol = randint(1, 1500)
-        em = Embed(title=results[numbelol]["text"], color=ctx.author.color)
-        await ctx.send(embed=em)
+    
+    @command(name="unoreverse")
+    async def unoreverse(self, ctx: Context, *, text: str) -> None:
+        """What do you think this is?"""
+        reversedtxt = text[::-1]
+        await ctx.send(reversedtxt)
 
     @command(name="gtn", aliases=['guessthenumber'])
     async def guessthenumber(self, ctx: Context) -> None:
