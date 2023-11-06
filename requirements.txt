@@ -1,5 +1,4 @@
 discord.py[voice]
-asyncpraw
 colorama
 motor
 aiofiles
