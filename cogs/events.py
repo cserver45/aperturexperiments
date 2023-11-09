@@ -69,36 +69,6 @@ class AutoReporterEvents(Cog):
         else:
             self.bot.dispatch("auto_report", ctx, exc)
 
-    @staticmethod
-    @Cog.listener()
-    async def on_guild_join(guild: Guild) -> None:
-        """Call when the bot joins a guild."""
-        system_channel = guild.system_channel
-        offtopic = find(lambda x: x.name == "offtopic", guild.text_channels)
-        general = find(lambda x: x.name == "general", guild.text_channels)
-
-        em = Embed(title="Thanks for adding me!",
-                   description="My defalt prefix is `.`, but that can be changed with the command `changeprefix` (see `.help changeprefix` for more info). The help command is `.help`.",
-                   timestamp=guild.me.joined_at,
-                   color=0x36393E)
-        em.add_field(name="Did i send this message in the wrong channel?",
-                     value=":flushed: I try my best to find a bot channel (then find a offtopic channel, and only falling back to a random channel when I cant find any channel I can talk in.), but im not perfect.")
-        em.add_field(name="Some important links:",
-                     value=f"""[Support Server](https://discord.gg/S55S9J4Y3p) for when you have some bug you want to report or just want to hang out with the developer :)\
-                             \n[Invite link]({oauth_url(735894171071545484, permissions=Permissions(permissions=3453353158), scopes=('bot', 'applications.commands'))}) Have someone else invite me to there server."""
-                     )
-        if offtopic and offtopic.permissions_for(guild.me).send_messages:
-            await offtopic.send(embed=em)
-        elif general and offtopic is None and general.permissions_for(guild.me).send_messages:
-            await general.send(embed=em)
-        elif system_channel and offtopic is None and general is None and system_channel.permissions_for(guild.me).send_messages:
-            await system_channel.send(embed=em)
-        else:
-            for channel in guild.text_channels:
-                if channel.permissions_for(guild.me).send_messages:
-                    await channel.send(embed=em)
-                    break
-
     @Cog.listener()
     async def on_auto_report(self, ctx: Context, exc: Exception) -> None:
         """Auto reporter event."""

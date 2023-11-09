@@ -49,17 +49,6 @@ class UtilsA(Cog, name="Utils"):  # type: ignore[call-arg]
         print(Back.GREEN + Style.BRIGHT + "Utils Cog Loaded." + Style.RESET_ALL)
 
     @Cog.listener()
-    async def on_guild_join(self, guild: Guild) -> None:
-        """Called when the bot joins a guild."""
-        document = {"serverid": str(guild.id), "prefix": ".", "automod": 0, "levelsys": 0}
-        await self.db.server_settings.insert_one(document)
-
-    @Cog.listener()
-    async def on_guild_remove(self, guild: Guild) -> None:
-        """Called when the bot leaves a guild."""
-        await self.db.server_settings.delete_many({'serverid': str(guild.id)})
-
-    @Cog.listener()
     async def on_command(self, ctx: Context) -> None:
         """Call when a command is runned."""
         if ctx.message.author.bot is False:
@@ -69,16 +58,6 @@ class UtilsA(Cog, name="Utils"):  # type: ignore[call-arg]
                     self.commands[command] = {"count": 1, "error": 0}
                     return
                 self.commands[command]["count"] += 1
-
-    @Cog.listener()
-    async def on_message(self, msg: Message) -> None:
-        """Call when a message is sent."""
-        if self.bot.user.mentioned_in(msg) and msg.mention_everyone is False and not msg.author.bot:
-            try:
-                prefixs = await self.db.server_settings.find_one({"serverid": str(msg.guild.id)})
-                await msg.channel.send(f"Your prefix is: `{prefixs['prefix']}`")
-            except(TypeError, AttributeError):
-                await msg.channel.send("You have the default prefix (`.`) becuase you are in a DM.")
 
     @command(hidden=True)
     @commands.is_owner()
@@ -276,10 +255,6 @@ class UtilsA(Cog, name="Utils"):  # type: ignore[call-arg]
 
     async def _cog_help(self, ctx: Context, cog_s: Cog) -> None:
         """Helper function for catergory help page."""
-        try:
-            prefixs = await self.db.server_settings.find_one({"serverid": str(ctx.guild.id)})
-        except TypeError:
-            prefixs = {'prefix': "."}
         cm = cog_s.get_commands()
         cmdl = []
         cmd_str = str()
@@ -294,26 +269,17 @@ class UtilsA(Cog, name="Utils"):  # type: ignore[call-arg]
         cmdl.sort()
         for cmdlo in cmdl:
             other_info = self.bot.get_command(cmdlo)
-            cmd_str = cmd_str + f"{prefixs['prefix']}{cmdlo}:  {other_info.short_doc}\n"
+            cmd_str = cmd_str + f"{cmdlo}:  {other_info.short_doc}\n"
         em = Embed(title=f"{cog_s.qualified_name} Catergory Commands.", description=str(cmd_str))
         await ctx.send(embed=em)
 
     async def _main_help(self, ctx: Context) -> None:
         """If no command is given, this is what is given."""
-        try:
-            prefixs = await self.db.server_settings.find_one({"serverid": str(ctx.guild.id)})
-        except TypeError:
-            prefixs = {'prefix': "."}
         em = Embed(title="Aperture Expieriments Help Page",
-                    description=f"Use **`{prefixs['prefix']}help [command]`** for more info on a command\nYou can also do **`{prefixs['prefix']}help [catergory]`** for help on a catergory.\nIf you have a problem, you could also join the [support server](https://discord.gg/HZmgbyKejA) to tell us about it.\n**To see what the syntax means, do `{prefixs['prefix']}help syntax`**",
+                    description=f"Use **`help [command]`** for more info on a command\nYou can also do **`help [catergory]`** for help on a catergory.\nIf you have a problem, you could also join the [support server](https://discord.gg/HZmgbyKejA) to tell us about it.\n**To see what the syntax means, do `help syntax`**",
                     colour=ctx.author.colour,
                     timestamp=ctx.message.created_at)
         cogs = [c for c in self.bot.cogs]  # pylint: disable=R1721
-        cogs.remove("EasterEggs")
-        try:
-            cogs.remove("TicketSystem")
-        except ValueError:
-            pass
         cogs.sort()
         for cog in cogs:
             cogi = self.bot.get_cog(cog)
