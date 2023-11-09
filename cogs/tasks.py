@@ -49,6 +49,6 @@ class TasksCog(Cog):
         await self.bot.change_presence(activity=Activity(type=0, name=(next(self.status))))
 
 
-def setup(bot: Client) -> None:
+async def setup(bot: Client) -> None:
     """Setup the cog."""
-    bot.add_cog(TasksCog(bot))
+    await bot.add_cog(TasksCog(bot))

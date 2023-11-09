@@ -160,6 +160,6 @@ class Games(Cog):
             await ctx.send(f"You're out of guesses. I was thinking of the number {number}")
 
 
-def setup(bot: Client) -> None:
+async def setup(bot: Client) -> None:
     """Setup Utils cog."""
-    bot.add_cog(Games(bot))
+    await bot.add_cog(Games(bot))

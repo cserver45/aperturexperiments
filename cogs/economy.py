@@ -576,6 +576,6 @@ class Economy(Cog):
         return e"""
 
 
-def setup(bot: Client) -> None:
+async def setup(bot: Client) -> None:
     """Setup Function for economy cog."""
-    bot.add_cog(Economy(bot))
+    await bot.add_cog(Economy(bot))

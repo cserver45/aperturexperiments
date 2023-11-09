@@ -324,6 +324,6 @@ class UtilsA(Cog, name="Utils"):  # type: ignore[call-arg]
             await self._is_cmd_or_cog(ctx, cmd)
 
 
-def setup(bot: Client) -> None:
+async def setup(bot: Client) -> None:
     """Setup Utils cog."""
-    bot.add_cog(UtilsA(bot))
+    await bot.add_cog(UtilsA(bot))

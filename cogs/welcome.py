@@ -34,6 +34,6 @@ class JoinLeave(Cog):
             await channel.send(f"{member.display_name} has left us. We now have only {len(member.guild.members)} members.")
 
 
-def setup(bot: Client) -> None:
+async def setup(bot: Client) -> None:
     """Setup function."""
-    bot.add_cog(JoinLeave(bot))
+    await bot.add_cog(JoinLeave(bot))

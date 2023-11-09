@@ -135,6 +135,6 @@ class Moderation(Cog):
         await ctx.send(embed=Em)
 
 
-def setup(bot: Client) -> None:
+async def setup(bot: Client) -> None:
     """Setup the cog."""
-    bot.add_cog(Moderation(bot))
+    await bot.add_cog(Moderation(bot))

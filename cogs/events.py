@@ -85,6 +85,6 @@ class AutoReporterEvents(Cog):
         await channel.send(f"Error report: ```{trace}\n\nSpecific Error:\n{exc}```")
 
 
-def setup(bot: Client) -> None:
+async def setup(bot: Client) -> None:
     """Setup function."""
-    bot.add_cog(AutoReporterEvents(bot))
+    await bot.add_cog(AutoReporterEvents(bot))

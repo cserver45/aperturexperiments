@@ -53,6 +53,6 @@ class Animals(Cog):
         await ctx.send(f'Duck photo link: {duckresult["url"]}')
 
 
-def setup(bot: Client) -> None:
+async def setup(bot: Client) -> None:
     """The setup function for animal cog."""
-    bot.add_cog(Animals(bot))
+    await bot.add_cog(Animals(bot))

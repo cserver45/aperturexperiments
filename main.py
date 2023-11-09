@@ -109,6 +109,7 @@ class Bot(commands.AutoShardedBot):
         # also define intents
         intents = discord.Intents.default()
         intents.members = True
+        intents.message_content = True
         self.on_ready_mode = False
 
         # for that custom function for prod
@@ -126,7 +127,7 @@ class Bot(commands.AutoShardedBot):
                          intents=intents,
                          case_insensitive=True,
                          max_messages=1500,
-                         command_prefix=self.cmd_get_prefix,
+                         command_prefix=".",
                          **kwargs
                          )
 
@@ -185,7 +186,7 @@ class Bot(commands.AutoShardedBot):
 
         return val * time_dict[unit]
 
-    def setup(self) -> None:
+    async def setup_hook(self):
         """Interior function that is run before the bot is started."""
         # load all the other cogs
         testbannedcogs = ("ticket.py", "welcome.py")
@@ -196,25 +197,17 @@ class Bot(commands.AutoShardedBot):
                     if f in testbannedcogs:
                         continue
                     else:
-                        bot.load_extension(f'cogs.{f[:-3]}')
+                        await bot.load_extension(f'cogs.{f[:-3]}')
                 else:
-                    bot.load_extension(f'cogs.{f[:-3]}')
+                    await bot.load_extension(f'cogs.{f[:-3]}')
 
     # pylint: disable=W0221
 
     def run(self) -> None:
         """Run the bot."""
-        self.setup()
-
-        print("Running bot...")
         if self.argus.token == 'testtoken':
-            # console.start()
-            # presence.start()
-            # self.ipc.start()
             token = self.config["main"]["canarytoken"]
         elif self.argus.token == 'protoken':
-            # console.start()
-            # bot.ipc.start()
             token = self.config["main"]["token"]
         else:
             raise InvalidToken('Not a vailid token option')
