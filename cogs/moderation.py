@@ -7,8 +7,6 @@ from discord.errors import Forbidden
 from discord.ext import commands
 from discord.ext.commands import Cog, Context, Greedy, MemberConverter, command
 
-from .lib.converters import BannedUser  # pylint: disable=E0402
-
 # discord.py commands must have self included, even if its not used
 # pylint: disable=R0201
 
@@ -78,7 +76,7 @@ class Moderation(Cog):
     @command()
     @commands.bot_has_permissions(send_messages=True, ban_members=True)
     @commands.has_permissions(ban_members=True)
-    async def unban(self, ctx: Context, members: Greedy[BannedUser], reason: Optional[str] = "No reason was given.") -> None:
+    async def unban(self, ctx: Context, members, reason: Optional[str] = "No reason was given.") -> None:
         """Unban a user that was banned from the server. Does not take mentions, only id's and usernames with descriminators."""
         # thanks Parafoxia for this code sniplet
         if not members:
