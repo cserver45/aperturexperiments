@@ -111,10 +111,6 @@ class Bot(commands.AutoShardedBot):
         intents.members = True
         self.on_ready_mode = False
 
-        self.webhook = discord.Webhook.from_url(str(self.config["main"]["websocket_link"]),
-                                                 adapter=discord.AsyncWebhookAdapter(self.session)
-                                                )
-
         # for that custom function for prod
         self.db_pass = self.config["mongodb"]["passwd"]
 
@@ -141,12 +137,6 @@ class Bot(commands.AutoShardedBot):
         """Call when the bot is ready."""
         if not self.on_ready_mode:
             print(" ok")
-            if self.argus.token == "testtoken":
-                await self.webhook.send('Bot online! (testing).',
-                                        username='Aperture Expieriments Testing'
-                                        )
-            else:
-                await self.webhook.send('Bot online!', username='Aperture Expieriments')
             logging.info('Bot Started and online')
 
             print(Back.GREEN + Style.BRIGHT + "Bot is online" + Style.RESET_ALL)

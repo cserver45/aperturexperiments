@@ -13,6 +13,7 @@ cogs/lib/__pycache__/
 
 # ignore enviroment/logging stuff
 .env/
+venv/
 log.log
 bot.conf
 linters.conf

@@ -3,8 +3,7 @@ import sys
 import traceback
 
 from colorama import Back, Style
-from discord import (Client, Embed, Forbidden, Guild,
-                      Permissions, Webhook, AsyncWebhookAdapter)
+from discord import Client, Embed, Forbidden, Guild, Permissions
 from discord.ext.commands import (BotMissingPermissions, Cog, CommandNotFound,
                                    CommandOnCooldown, Context, DisabledCommand,
                                    MissingPermissions, MissingRequiredArgument,
@@ -15,31 +14,17 @@ from discord.utils import find, oauth_url
 class AutoReporterEvents(Cog):
     """Auto reporter and custom events parent class."""
 
-    __slots__ = ("bot", "webhook")
+    __slots__ = ("bot")
 
     def __init__(self, bot: Client) -> None:
         """Init Function."""
         self.bot = bot
-        self.webhook = Webhook.from_url(str(bot.config["main"]["cmd_log_link"]),
-                                        adapter=AsyncWebhookAdapter(bot.session)
-                                        )
 
     @staticmethod
     @Cog.listener()
     async def on_ready() -> None:
         """Called when cog is loaded and ready."""
         print(Back.GREEN + Style.BRIGHT + "Events/Auto Reporter Cog loaded." + Style.RESET_ALL)
-
-    @Cog.listener()
-    async def on_command(self, ctx: Context) -> None:
-        """Log when a command is called for debug purposes later."""
-        em = Embed(title="Command Execution Called:", timestamp=ctx.message.created_at)
-        em.set_footer(text=f"Called by {ctx.author.name}.", icon_url=str(ctx.author.avatar_url))
-        em.add_field(name="Guild:", value=str(ctx.guild))
-        em.add_field(name="Command:", value=str(ctx.message.content))
-        await self.webhook.send(embed=em,
-                                username='Aperture Expieriments'
-                                )
 
     @Cog.listener()
     async def on_command_error(self, ctx: Context, exc: Exception) -> None:
