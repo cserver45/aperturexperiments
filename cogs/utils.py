@@ -15,7 +15,6 @@ from discord.ext import commands
 from discord.ext.commands import (Cog, Context, ExtensionNotFound,
                                    ExtensionNotLoaded, check_any, command,
                                    guild_only)
-from discord.utils import oauth_url
 from psutil import Process
 
 # discord.py commands must have self included, even if its not used
@@ -42,12 +41,6 @@ class UtilsA(Cog, name="Utils"):  # type: ignore[call-arg]
         self.bot_version = str(self.bot.config["main"]["version"])
         self.db = bot.db
 
-    @staticmethod
-    @Cog.listener()
-    async def on_ready() -> None:
-        """Called when Utils Cog is loaded."""
-        print(Back.GREEN + Style.BRIGHT + "Utils Cog Loaded." + Style.RESET_ALL)
-
     @Cog.listener()
     async def on_command(self, ctx: Context) -> None:
         """Call when a command is runned."""
@@ -70,14 +63,14 @@ class UtilsA(Cog, name="Utils"):  # type: ignore[call-arg]
     @commands.is_owner()
     async def load_cog(self, ctx: Context, ext: str) -> None:
         """Load a Cog."""
-        self.bot.load_extension(f'cogs.{ext}')
+        await self.bot.load_extension(f'cogs.{ext}')
         await ctx.send(f"loaded {ext}.")
 
     @command(hidden=True)
     @commands.is_owner()
     async def unload_cog(self, ctx: Context, ext: str) -> None:
         """Unloads a Cog."""
-        self.bot.unload_extension(f'cogs.{ext}')
+        await self.bot.unload_extension(f'cogs.{ext}')
         await ctx.send(f"unloaded {ext}.")
 
     @command(hidden=True)
@@ -91,12 +84,12 @@ class UtilsA(Cog, name="Utils"):  # type: ignore[call-arg]
                     if cog[:-3].lower() == "jishaku":
                         continue
 
-                    self.bot.unload_extension(f"cogs.{cog[:-3].lower()}")
-                    self.bot.load_extension(f"cogs.{cog[:-3].lower()}")
+                    await self.bot.unload_extension(f"cogs.{cog[:-3].lower()}")
+                    await self.bot.load_extension(f"cogs.{cog[:-3].lower()}")
                     msg += f"reloaded {cog[:-3].lower()}.\n"
                 except ExtensionNotLoaded:
                     try:
-                        self.bot.load_extension(f"cogs.{cog[:-3].lower}")
+                        await self.bot.load_extension(f"cogs.{cog[:-3].lower}")
                         msg += f"Loaded {cog[:-3].lower()}.\n"
                     except ExtensionNotFound:
                         continue
@@ -105,7 +98,7 @@ class UtilsA(Cog, name="Utils"):  # type: ignore[call-arg]
 
         else:
             try:
-                self.bot.reload_extension(f'cogs.{ext}')
+                await self.bot.reload_extension(f'cogs.{ext}')
                 await ctx.send(f"reloaded {ext}.")
             except ExtensionNotLoaded:
                 await ctx.send(f"I can't find {ext}.")
@@ -211,13 +204,6 @@ class UtilsA(Cog, name="Utils"):  # type: ignore[call-arg]
                 await ctx.send(i)
 
     # Help commands stuff after this
-
-    @command(name="invites", hidden=True)
-    async def show_invites(self, ctx: Context) -> None:
-        """Shows invite links for this bot."""
-        em = Embed(timestamp=ctx.message.created_at)
-        em.add_field(name="Invites:", value=f"Will put other invite links here after bot gets out of open beta.\nBut here's the [direct invite link.]({oauth_url(735894171071545484, permissions=Permissions(permissions=3453353158), scopes=('bot', 'applications.commands'))})")
-
     async def _is_cmd_or_cog(self, ctx: Context, cogorcmd: str) -> None:
         """Sees if its a command or a cog."""
         if cogorcmd == "syntax":
