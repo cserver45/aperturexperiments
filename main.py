@@ -19,8 +19,6 @@ from discord.ext.commands import (CommandNotFound, CommandOnCooldown, Context,
                                    MissingPermissions, MissingRequiredArgument,
                                    NoPrivateMessage, NotOwner, UserInputError)
 
-from bot.errors import CommandError, InvalidToken
-
 # monkypatching stuff
 
 # discord.gateway.DiscordWebSocket.identify.payload["d"]["$browser"] = 'Discord Android'
@@ -166,7 +164,7 @@ class Bot(commands.AutoShardedBot):
         if isinstance(error, self.IGNORE_ERRS):
             pass
         else:
-            raise CommandError(error) from error
+            raise error
 
     @staticmethod
     def convert_time_custom(time: str) -> int:
@@ -210,7 +208,7 @@ class Bot(commands.AutoShardedBot):
         elif self.argus.token == 'protoken':
             token = self.config["main"]["token"]
         else:
-            raise InvalidToken('Not a vailid token option')
+            raise Exception('Not a vailid token option')
 
         super().run(token, reconnect=True)
 
