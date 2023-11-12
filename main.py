@@ -76,11 +76,6 @@ class Bot(commands.AutoShardedBot):
         """Init function."""
         asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
 
-        # to get the console to shutup about how session is defined in a sync function
-        with warnings.catch_warnings():
-            warnings.simplefilter("ignore")
-            self.session = aiohttp.ClientSession(loop=asyncio.get_event_loop())
-
         # configuration file parser
         self.config = configparser.ConfigParser()
         self.config.read('bot.conf')
@@ -187,7 +182,10 @@ class Bot(commands.AutoShardedBot):
     async def setup_hook(self):
         """Interior function that is run before the bot is started."""
         # load all the other cogs
-        testbannedcogs = ("ticket.py", "welcome.py")
+        # init the aiohttp session
+        self.session = aiohttp.ClientSession(loop=asyncio.get_event_loop())
+
+        testbannedcogs = ("welcome.py")
 
         for f in os.listdir("./cogs"):
             if f.endswith('.py'):
