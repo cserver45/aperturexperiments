@@ -199,6 +199,9 @@ class Bot(commands.AutoShardedBot):
                 else:
                     await bot.load_extension(f'cogs.{f[:-3]}')
 
+        self.tree.copy_global_to(guild=discord.Object(id=777203561708126208))
+        await self.tree.sync(guild=discord.Object(id=777203561708126208))
+
     # pylint: disable=W0221
 
     def run(self) -> None:

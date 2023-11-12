@@ -5,7 +5,7 @@ from typing import Optional
 import aiofiles
 from colorama import Back, Style
 from discord import Client, Color, Embed, Message
-from discord.ext.commands import Cog, Context, MemberConverter, command
+from discord.ext.commands import Cog, Context, MemberConverter, command, hybrid_command
 
 from .lib.enums import RPS  # pylint: disable=E0402
 
@@ -48,7 +48,7 @@ class Games(Cog):
         """Called when Utils Cog is loaded."""
         print(Back.GREEN + Style.BRIGHT + "Fun and Games Cog Loaded." + Style.RESET_ALL)
 
-    @command()
+    @hybrid_command(name="flip")
     async def flip(self, ctx: Context, member: Optional[MemberConverter] = None) -> None:
         """Flip a coin. (or a user :o)."""
         if member is not None:
@@ -109,7 +109,7 @@ class Games(Cog):
             await self.db.rpstats.update_one({"userid": ctx.author.id}, {"$set": {"tie": (user["tie"] + 1)}})
             await ctx.reply(content=f"We're Even! We both got {player_c.value}")
 
-    @command()
+    @hybrid_command()
     async def rpstats(self, ctx: Context) -> None:
         """Show statistics about your rock, paper, scissors games."""
         user = await self.db.rpstats.find_one({"userid": ctx.author.id})
@@ -125,13 +125,13 @@ class Games(Cog):
         e.add_field(name="Lost:", value=str(user["lost"]))
         await ctx.send(embed=e)
     
-    @command(name="unoreverse")
+    @hybrid_command(name="unoreverse")
     async def unoreverse(self, ctx: Context, *, text: str) -> None:
         """What do you think this is?"""
         reversedtxt = text[::-1]
         await ctx.send(reversedtxt)
 
-    @command(name="gtn", aliases=['guessthenumber'])
+    @hybrid_command(name="gtn", aliases=['guessthenumber'])
     async def guessthenumber(self, ctx: Context) -> None:
         """Guess a number between 1 and 10."""
         def check(m: Message) -> bool:

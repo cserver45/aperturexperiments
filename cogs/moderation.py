@@ -105,8 +105,8 @@ class Moderation(Cog):
             await ctx.send("Nicknames can not be more than 32 characters in length.")
         else:
             try:
-                await member.edit(nick=nickname)
-                await ctx.send("That member's nickname has been changed.")
+                updated_nick = await member.edit(nick=nickname)
+                await ctx.send(f"That member's nickname has been changed to {updated_nick.nick}")
             except Forbidden:
                 await ctx.send(f"I am below the highest role that {member.display_name} has.")
 
