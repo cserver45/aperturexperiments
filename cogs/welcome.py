@@ -13,12 +13,6 @@ class JoinLeave(Cog):
         """Init function."""
         self.bot = bot
 
-    @staticmethod
-    @Cog.listener()
-    async def on_ready() -> None:
-        """Called when cog is loaded and ready."""
-        print(Back.GREEN + Style.BRIGHT + "Welcome Cog loaded." + Style.RESET_ALL)
-
     @Cog.listener()
     async def on_member_join(self, member: MemberConverter) -> None:
         """Called when a member joins the server."""

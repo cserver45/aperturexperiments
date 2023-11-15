@@ -14,12 +14,6 @@ class Animals(Cog):
         self.bot = bot
         self.session = bot.session
 
-    @Cog.listener()
-    @staticmethod
-    async def on_ready() -> None:
-        """Call when cog is loaded and ready."""
-        print(Back.GREEN + Style.BRIGHT + "Animal Cog loaded." + Style.RESET_ALL)
-
     @cooldown(1, 5, BucketType.user)
     @hybrid_command()
     async def dog(self, ctx: Context) -> None:

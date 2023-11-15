@@ -6,7 +6,6 @@ import asyncio
 import configparser
 import logging
 import os
-import warnings
 from typing import Tuple, Union
 
 import aiohttp

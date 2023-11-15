@@ -42,12 +42,6 @@ class Games(Cog):
         self.db = bot.db
         self.session = bot.session
 
-    @staticmethod
-    @Cog.listener()
-    async def on_ready() -> None:
-        """Called when Utils Cog is loaded."""
-        print(Back.GREEN + Style.BRIGHT + "Fun and Games Cog Loaded." + Style.RESET_ALL)
-
     @hybrid_command(name="flip")
     async def flip(self, ctx: Context, member: Optional[MemberConverter] = None) -> None:
         """Flip a coin. (or a user :o)."""

@@ -32,7 +32,6 @@ class TasksCog(Cog):
     async def on_ready(self) -> None:
         """Called when this cog is ready."""
         if not self.bot.on_ready_mode:
-            print(Back.GREEN + Style.BRIGHT + "Tasks Cog Loaded." + Style.RESET_ALL)
 
             # the start() methould is created at runtime (this is to shutup pylint)
             # pylint: disable=E1101

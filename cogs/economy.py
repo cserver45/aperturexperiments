@@ -27,16 +27,6 @@ class Economy(Cog):
         self.db = bot.db
 
     @Cog.listener()
-    async def on_ready(self) -> None:
-        """Called when cog is loaded and ready."""
-        # pylint: disable=E1101
-        if self.bot.argus.token == "protoken":
-            self.do_econ_raffle.start()
-
-        # pylint: enable=E1101
-        print(Back.GREEN + Style.BRIGHT + "Economy Cog loaded." + Style.RESET_ALL)
-
-    @Cog.listener()
     async def on_command_completion(self, ctx: Context) -> None:
         """Called when a command is completed sucessfully."""
         try:
@@ -50,7 +40,7 @@ class Economy(Cog):
                         return bool(m.author == ctx.message.author and m.channel == channel and m.content == phrase)
 
                     try:
-                        await ctx.send(f"Quick someone dropped there wallet!\nType `{phrase}`")
+                        await ctx.send(f"Quick someone dropped their wallet!\nType `{phrase}`")
                         msg = await self.bot.wait_for('message', timeout=50.0, check=check)
                     except asyncio.TimeoutError:
                         await ctx.send('Either no one answered in time, or no one answered correctly.')
@@ -66,20 +56,6 @@ class Economy(Cog):
                 pass
         except AttributeError:
             pass
-
-    # economy raffle stuff
-    @tasks.loop(hours=12)
-    async def do_econ_raffle(self) -> None:
-        """Do the economy raffle every 12 hours."""
-        guild = self.bot.get_guild(843208429409402920)
-        prize = random.randint(1, 1000)
-        winner = random.choice(guild.members)
-        while winner.bot:
-            winner = random.choice(guild.members)
-        channel = guild.get_channel(861725677367197707)
-        await self._open_account(channel, winner)
-        await self._update_bank(winner, prize)
-        await channel.send(f"{winner.name} has won {prize} coins.")
 
     @commands.cooldown(1, 3, commands.BucketType.user)
     @command(aliases=["bal"])
