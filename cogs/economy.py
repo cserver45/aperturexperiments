@@ -58,7 +58,7 @@ class Economy(Cog):
             pass
 
     @commands.cooldown(1, 3, commands.BucketType.user)
-    @command(aliases=["bal"])
+    @hybrid_command(aliases=["bal"])
     async def balance(self, ctx: Context, member: Optional[MemberConverter]) -> None:
         """Check your balance."""
         member = member or ctx.author
@@ -73,7 +73,7 @@ class Economy(Cog):
         await ctx.send(embed=bembed)
 
     @commands.cooldown(1, 10, commands.BucketType.user)
-    @command()
+    @hybrid_command()
     async def beg(self, ctx: Context) -> None:
         """Why would you beg for money?"""
         await self._open_account(ctx, ctx.author)
@@ -84,7 +84,7 @@ class Economy(Cog):
         await ctx.send(f'Someone gave you {earnings} coins.')
         await self._update_bank(user, earnings)
 
-    @command(aliases=['with', 'frombank'])
+    @hybrid_command(aliases=['with', 'frombank'])
     async def withdraw(self, ctx: Context, amount: Union[str, int]) -> None:
         """Get some of that money you put in the bank back into your wallet."""
         await self._open_account(ctx, ctx.author)
@@ -110,7 +110,7 @@ class Economy(Cog):
         await ctx.send(f'You withdrew {amount} coins from the bank.')
 
     @commands.cooldown(1, 3, commands.BucketType.user)
-    @command(aliases=['dep', 'savings'])
+    @hybrid_command(aliases=['dep', 'savings'])
     async def deposit(self, ctx: Context, amount: Union[str, int]) -> None:
         """Deposit some money into the bank."""
         await self._open_account(ctx, ctx.author)
@@ -136,7 +136,7 @@ class Economy(Cog):
         await ctx.send(f'You deposited {amount} coins to the bank.')
 
     @commands.cooldown(1, 5, commands.BucketType.user)
-    @command()
+    @hybrid_command()
     async def send(self, ctx: Context, member: MemberConverter, amount: int) -> None:
         """Give someone some money."""
         await self._open_account(ctx, ctx.author)
@@ -163,7 +163,7 @@ class Economy(Cog):
         await ctx.send(f'You Gave {amount} coins to {member} from your bank.')
 
     @commands.cooldown(1, 60, commands.BucketType.user)
-    @command()
+    @hybrid_command()
     async def rob(self, ctx: Context, member: MemberConverter) -> None:
         """Rob some money out of someone's wallet."""
         await self._open_account(ctx, ctx.author)
@@ -189,7 +189,7 @@ class Economy(Cog):
         await ctx.send(f'You robbed {member} {earnings} coins.')
 
     @commands.cooldown(1, 3, commands.BucketType.user)
-    @command()
+    @hybrid_command()
     async def slots(self, ctx: Context, amount: int) -> None:
         """Play a Slots machine."""
         await self._open_account(ctx, ctx.author)
@@ -232,7 +232,7 @@ class Economy(Cog):
             em.add_field(name='You lost', value='Maybe try again?', inline=False)
             await ctx.send(embed=em)
 
-    @command()
+    @hybrid_command()
     async def shop(self, ctx: Context) -> None:
         """See what items are in stock."""
         em = Embed(title="Shop", timestamp=ctx.message.created_at)
@@ -247,7 +247,7 @@ class Economy(Cog):
 
         await ctx.send(embed=em)
 
-    @command()
+    @hybrid_command()
     async def badges(self, ctx: Context, user: Optional[User]) -> None:
         """See what badges you currently have."""
         await self._open_account(ctx, user or ctx.author)
@@ -258,7 +258,7 @@ class Economy(Cog):
                    )
         await ctx.send(embed=em)
 
-    @command(hidden=True)
+    @hybrid_command(hidden=True)
     @commands.is_owner()
     async def add_exp(self, ctx: Context, ammount: int = 500, member: MemberConverter = None) -> None:
         """Add coins to someones wallet/bank (Developers only)."""
@@ -268,7 +268,7 @@ class Economy(Cog):
         await self._update_bank(member, int(ammount))
         await ctx.send(f'Added {ammount} coins to {member}.')
 
-    @command()
+    @hybrid_command()
     async def buy(self, ctx: Context, item: str, amount: Optional[int]) -> None:
         """Buy something."""
         amount = amount or 1  # stop it mypy
@@ -286,7 +286,7 @@ class Economy(Cog):
 
         await ctx.send(f"You just bought {amount} {item}(s).")
 
-    @command(aliases=["inv", "inventory"])
+    @hybrid_command(aliases=["inv", "inventory"])
     async def bag(self, ctx: Context) -> None:
         """See what you have bought."""
         await self._open_account(ctx, ctx.author)
@@ -302,7 +302,7 @@ class Economy(Cog):
 
         await ctx.send(embed=em)
 
-    @command()
+    @hybrid_command()
     async def sell(self, ctx: Context, item: str, amount: Optional[int]) -> None:
         """Sell something you have in your bag."""
         amount = amount or 1  # mypy shutup already
@@ -323,7 +323,7 @@ class Economy(Cog):
 
         await ctx.send(f"You just sold {amount} {item}(s).")
 
-    @command(aliases=('hilow', 'hilo'))
+    @hybrid_command(aliases=('hilow', 'hilo'))
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def highlow(self, ctx: Context, choice: str, bet: Optional[Union[int, float]]) -> None:
         """Bet some money on whether the dice have a high number or a low number.
@@ -374,7 +374,7 @@ class Economy(Cog):
         await message.edit(content=msg + f"\nYour choice was {choice}. You {'won' if won is True else 'lost'} {old_bet if won is False else int(bet)} coins.")
         await self._update_bank(ctx.author, int(bet))
 
-    @command()
+    @hybrid_command()
     async def dive(self, ctx: Context) -> None:
         """Dive and see what people dropped over boats."""
         await self._open_account(ctx, ctx.author)
