@@ -7,14 +7,12 @@ from typing import Optional
 
 import aiofiles
 import humanize  # pylint: disable=E0401
-from colorama import Back, Style
-from discord import Client, DMChannel, Embed, Guild, Message, Permissions
+from discord import Client, Embed
 from discord import __version__ as discord__version
 from discord.errors import HTTPException
 from discord.ext import commands
 from discord.ext.commands import (Cog, Context, ExtensionNotFound,
-                                   ExtensionNotLoaded, check_any, command,
-                                   guild_only)
+                                   ExtensionNotLoaded, command)
 from psutil import Process
 
 # discord.py commands must have self included, even if its not used
@@ -262,7 +260,7 @@ class UtilsA(Cog, name="Utils"):  # type: ignore[call-arg]
     async def _main_help(self, ctx: Context) -> None:
         """If no command is given, this is what is given."""
         em = Embed(title="Aperture Expieriments Help Page",
-                    description=f"Use **`help [command]`** for more info on a command\nYou can also do **`help [catergory]`** for help on a catergory.\nIf you have a problem, you could also join the [support server](https://discord.gg/HZmgbyKejA) to tell us about it.\n**To see what the syntax means, do `help syntax`**",
+                    description="Use **`help [command]`** for more info on a command\nYou can also do **`help [catergory]`** for help on a catergory.\nIf you have a problem, you could also join the [support server](https://discord.gg/HZmgbyKejA) to tell us about it.\n**To see what the syntax means, do `help syntax`**",
                     colour=ctx.author.colour,
                     timestamp=ctx.message.created_at)
         cogs = [c for c in self.bot.cogs]  # pylint: disable=R1721

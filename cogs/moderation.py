@@ -1,7 +1,6 @@
 """Moderation Cog."""
 from typing import Optional
 
-from colorama import Back, Style
 from discord import Client, Embed
 from discord.errors import Forbidden
 from discord.ext import commands

@@ -6,7 +6,7 @@ import asyncio
 import configparser
 import logging
 import os
-from typing import Tuple, Union
+from typing import Tuple
 
 import aiohttp
 import discord

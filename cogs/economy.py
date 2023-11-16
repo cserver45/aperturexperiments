@@ -5,11 +5,10 @@ import secrets
 from copy import deepcopy
 from typing import Any, List, Optional, Tuple, Union
 
-from colorama import Back, Style
 from discord import Client, Colour, Embed, Message, User
-from discord.ext import commands, tasks
+from discord.ext import commands
 from discord.ext.commands import (Cog, Context,
-                                   MemberConverter, command)
+                                   MemberConverter, hybrid_command)
 
 banned_commands = ("deposit", "withdraw", "balance", "send", "shop", "bag", "badges")
 

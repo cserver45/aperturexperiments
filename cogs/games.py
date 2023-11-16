@@ -2,8 +2,6 @@
 from random import choice, randint
 from typing import Optional
 
-import aiofiles
-from colorama import Back, Style
 from discord import Client, Color, Embed, Message
 from discord.ext.commands import Cog, Context, MemberConverter, command, hybrid_command
 

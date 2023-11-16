@@ -1,5 +1,4 @@
 """Animals Cog."""
-from colorama import Back, Style
 from discord import Client
 from discord.ext.commands import BucketType, Cog, Context, hybrid_command, cooldown
 

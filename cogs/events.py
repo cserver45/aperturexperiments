@@ -2,13 +2,11 @@
 import sys
 import traceback
 
-from colorama import Back, Style
-from discord import Client, Embed, Forbidden, Guild, Permissions
+from discord import Client, Embed, Forbidden
 from discord.ext.commands import (BotMissingPermissions, Cog, CommandNotFound,
                                    CommandOnCooldown, Context, DisabledCommand,
                                    MissingPermissions, MissingRequiredArgument,
                                    NoPrivateMessage, NotOwner, UserInputError)
-from discord.utils import find, oauth_url
 
 
 class AutoReporterEvents(Cog):
@@ -19,12 +17,6 @@ class AutoReporterEvents(Cog):
     def __init__(self, bot: Client) -> None:
         """Init Function."""
         self.bot = bot
-
-    @staticmethod
-    @Cog.listener()
-    async def on_ready() -> None:
-        """Called when cog is loaded and ready."""
-        print(Back.GREEN + Style.BRIGHT + "Events/Auto Reporter Cog loaded." + Style.RESET_ALL)
 
     @Cog.listener()
     async def on_command_error(self, ctx: Context, exc: Exception) -> None:

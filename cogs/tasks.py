@@ -1,7 +1,6 @@
 """Tasks cog."""
 from itertools import cycle
 
-from colorama import Back, Style
 from discord import Activity, Client
 from discord.ext import tasks
 from discord.ext.commands import Cog
