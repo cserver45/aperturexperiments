@@ -12,7 +12,7 @@ from discord import __version__ as discord__version
 from discord.errors import HTTPException
 from discord.ext import commands
 from discord.ext.commands import (Cog, Context, ExtensionNotFound,
-                                   ExtensionNotLoaded, command)
+                                   ExtensionNotLoaded, hybrid_command)
 from psutil import Process
 
 # discord.py commands must have self included, even if its not used
@@ -39,39 +39,28 @@ class UtilsA(Cog, name="Utils"):  # type: ignore[call-arg]
         self.bot_version = str(self.bot.config["main"]["version"])
         self.db = bot.db
 
-    @Cog.listener()
-    async def on_command(self, ctx: Context) -> None:
-        """Call when a command is runned."""
-        if ctx.message.author.bot is False:
-            command_ = str(ctx.command)
-            if command_ != "None":
-                if command not in self.commands:
-                    self.commands[command] = {"count": 1, "error": 0}
-                    return
-                self.commands[command]["count"] += 1
-
-    @command(hidden=True)
+    @hybrid_command(hidden=True)
     @commands.is_owner()
     async def see_servers(self, ctx: Context) -> None:
         """Placeholder."""
         for guild in self.bot.guilds:
             await ctx.send(guild.name)
 
-    @command(hidden=True)
+    @hybrid_command(hidden=True)
     @commands.is_owner()
     async def load_cog(self, ctx: Context, ext: str) -> None:
         """Load a Cog."""
         await self.bot.load_extension(f'cogs.{ext}')
         await ctx.send(f"loaded {ext}.")
 
-    @command(hidden=True)
+    @hybrid_command(hidden=True)
     @commands.is_owner()
     async def unload_cog(self, ctx: Context, ext: str) -> None:
         """Unloads a Cog."""
         await self.bot.unload_extension(f'cogs.{ext}')
         await ctx.send(f"unloaded {ext}.")
 
-    @command(hidden=True)
+    @hybrid_command(hidden=True)
     @commands.is_owner()
     async def reload_cog(self, ctx: Context, ext: str) -> None:
         """Reload a Cog."""
@@ -101,7 +90,7 @@ class UtilsA(Cog, name="Utils"):  # type: ignore[call-arg]
             except ExtensionNotLoaded:
                 await ctx.send(f"I can't find {ext}.")
 
-    @command(hidden=True)
+    @hybrid_command(hidden=True)
     @commands.is_owner()
     async def toggle(self, ctx: Context, *, command_str: str) -> None:
         """Toggle an command to be disable or enabled. Can only be used by cserver#3402."""
@@ -118,19 +107,19 @@ class UtilsA(Cog, name="Utils"):  # type: ignore[call-arg]
         cmd.enabled = not cmd.enabled
         await ctx.send(f"I have {'enabled' if cmd.enabled else 'disabled'} {cmd.qualified_name} for you.")
 
-    @command(aliases=['pingt'])
+    @hybrid_command(aliases=['pingt'])
     async def ping(self, ctx: Context) -> None:
         """Get ping time to websocket @ discord."""
         await ctx.send(f'Ping time: {round(self.bot.latency * 1000)}ms')
 
-    @command(name="privacy", aliases=["privacy-policy"])
+    @hybrid_command(name="privacy", aliases=["privacy-policy"])
     async def get_privacy_policy(self, ctx: Context) -> None:
         """Shows the privacy policy for the bot."""
         async with aiofiles.open(r"legal/Privacy Policy", mode="r") as f:
             text = await f.read()
             await ctx.send(text)
 
-    @command(name="bot_status", aliases=["status", "stats", "bot_info"])
+    @hybrid_command(name="bot_status", aliases=["status", "stats", "bot_info"])
     async def show_bot_status(self, ctx: Context) -> None:
         """Gets some info about the bot."""
         try:
@@ -175,7 +164,6 @@ class UtilsA(Cog, name="Utils"):  # type: ignore[call-arg]
             (":adult: Users:", f"{actual_members_total[0]:,}", True),
             (":homes: Servers (guilds):", f"{actual_members_total[1]:,}", True),
             (":gear: Cogs loaded:", f"{self.bot.cog_count}/{cog_amount} loaded", True),
-            (":desktop: Commmand count:", f"{self.bot.command_count} commands\nCommands runned from startup: {self.commands[command]['count']}", True),
             (":ping_pong: Ping:", f"Websocket: {round(self.bot.latency * 1000)} ms.\nRoundtrip: {rnd_trp} ms.\nMonogdb ping: {mongodb_ping} ms.", False),
             (":clock1: Uptime:", f"{days} days, {hours} hours, {minutes} minutes, {seconds} seconds", False)
         ]
@@ -191,7 +179,7 @@ class UtilsA(Cog, name="Utils"):  # type: ignore[call-arg]
         em.insert_field_at(index=9, name=":ping_pong: Ping:", value=f"Websocket: {round(self.bot.latency * 1000)} ms.\nRoundtrip: {rnd_trp} ms.\nMonogdb ping: {mongodb_ping} ms.", inline=False)
         await msg.edit(embed=em)
 
-    @command()
+    @hybrid_command()
     async def changelog(self, ctx: Context) -> None:
         """Shows the changelog if I decide to list anything new there."""
         async with aiofiles.open("CHANGELOG", mode="r") as f:
@@ -213,7 +201,7 @@ class UtilsA(Cog, name="Utils"):  # type: ignore[call-arg]
         else:
             await ctx.send("That help page does not exist.")
 
-    async def _cmd_help(self, ctx: Context, command_s: command) -> None:
+    async def _cmd_help(self, ctx: Context, command_s) -> None:
         """Helper function for cmd help page."""
         if command_s.enabled is False:
             await ctx.send(f"{command_s.qualified_name} has been disabled.")
@@ -299,7 +287,7 @@ class UtilsA(Cog, name="Utils"):  # type: ignore[call-arg]
         """Show info about what your prefix is (mostly useless)."""
 
     @commands.cooldown(1, 5, commands.BucketType.user)
-    @command(name="help", aliases=["info"])
+    @hybrid_command(name="help", aliases=["info"])
     async def show_help(self, ctx: Context, cmd: Optional[str]) -> None:
         """Shows this message."""
         if cmd is None:
