@@ -1,21 +1,16 @@
 `service` refers to `Aperture Experiments discord bot`
+`owner` refers to the person running the bot (which is `(insert name here)`)
 
-We here at Aperture Experiments development team respect your Privacy.
+We here at the Aperture Experiments development team respect your Privacy.
 By using this service, you grant us access to store your discord user id.
-Server owners, you grant us to store your server's discord id by using this service.
 
 __Why we store your discord user id:__
 When you use our service, (specifically the economy system) we need something to link you to your progress when using this service.
-If we didn't store this data, we could not have stuff like the economy system (as an example).
-
-__Server owners: Why we store your server id:__
-Your server id is needed to link your server with the specified prefix/other settings you have setup/changed.
-Otherwise, we could not have the option for the prefix to change on a per-server basis.
+If we didn't store this data, we could not have services like the economy system (as an example).
 
 __How to remove/request your data:__
-Join the support server (https://discord.gg/S55S9J4Y3p) and dm/ping one of the users under the role `Aperture Experiments Developers`.
+DM the owner of the bot (or the maintainter of the bot)
 Then explain what you want to me removed/requested.
-In the future there might be a ticket system for this to make this more automated.
 
 We reserve the right to change this at any time, without notice
-Last updated 6/3/2021 (M/D/Y)
+Last updated 11/16/2022 (M/D/Y)
