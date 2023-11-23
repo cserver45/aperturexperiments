@@ -84,7 +84,7 @@ class Economy(Cog):
         await self._update_bank(user, earnings)
 
     @hybrid_command(aliases=['with', 'frombank'])
-    async def withdraw(self, ctx: Context, amount: Union[str, int]) -> None:
+    async def withdraw(self, ctx: Context, amount: int) -> None:
         """Get some of that money you put in the bank back into your wallet."""
         await self._open_account(ctx, ctx.author)
 
@@ -110,7 +110,7 @@ class Economy(Cog):
 
     @commands.cooldown(1, 3, commands.BucketType.user)
     @hybrid_command(aliases=['dep', 'savings'])
-    async def deposit(self, ctx: Context, amount: Union[str, int]) -> None:
+    async def deposit(self, ctx: Context, amount: int) -> None:
         """Deposit some money into the bank."""
         await self._open_account(ctx, ctx.author)
 
@@ -324,7 +324,7 @@ class Economy(Cog):
 
     @hybrid_command(aliases=('hilow', 'hilo'))
     @commands.cooldown(1, 5, commands.BucketType.user)
-    async def highlow(self, ctx: Context, choice: str, bet: Optional[Union[int, float]]) -> None:
+    async def highlow(self, ctx: Context, choice: str, bet: Optional[int]) -> None:
         """Bet some money on whether the dice have a high number or a low number.
 
         The middle point is 7, above 7 is high, below 7 is low.

@@ -2,7 +2,6 @@
 """Aperture Expieriments Startup Script."""
 
 import argparse
-import asyncio
 import configparser
 import logging
 import os
@@ -11,7 +10,6 @@ from typing import Tuple
 import aiohttp
 import discord
 import motor.motor_asyncio
-import uvloop
 from colorama import Back, Style
 from discord.ext import commands  # pylint: disable=E0611
 from discord.ext.commands import (CommandNotFound, CommandOnCooldown, Context,
@@ -73,7 +71,7 @@ class Bot(commands.AutoShardedBot):
 
     def __init__(self, *args: list, **kwargs: dict) -> None:
         """Init function."""
-        asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
+        #asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
 
         # configuration file parser
         self.config = configparser.ConfigParser()
@@ -108,12 +106,11 @@ class Bot(commands.AutoShardedBot):
         self.db_pass = self.config["mongodb"]["passwd"]
 
         # mongodb stuff
-        client = motor.motor_asyncio.AsyncIOMotorClient(str(self.config["mongodb"]["passwd"]), io_loop=asyncio.get_event_loop())
+        client = motor.motor_asyncio.AsyncIOMotorClient(str(self.config["mongodb"]["passwd"]))
         self.db = client.aperturelabsbot
 
         # init the parent class (AutoShardedBot)
         super().__init__(*args,
-                         loop=asyncio.get_event_loop(),
                          status=discord.Status.idle,
                          activity=activity_type,
                          intents=intents,
@@ -182,7 +179,7 @@ class Bot(commands.AutoShardedBot):
         """Interior function that is run before the bot is started."""
         # load all the other cogs
         # init the aiohttp session
-        self.session = aiohttp.ClientSession(loop=asyncio.get_event_loop())
+        self.session = aiohttp.ClientSession()
 
         testbannedcogs = ("welcome.py")
 
