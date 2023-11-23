@@ -35,16 +35,8 @@ class UtilsA(Cog, name="Utils"):  # type: ignore[call-arg]
         """Init function."""
         self.bot = bot
         self.bot.remove_command("help")
-        self.commands: dict = {}
         self.bot_version = str(self.bot.config["main"]["version"])
         self.db = bot.db
-
-    @hybrid_command(hidden=True)
-    @commands.is_owner()
-    async def see_servers(self, ctx: Context) -> None:
-        """Placeholder."""
-        for guild in self.bot.guilds:
-            await ctx.send(guild.name)
 
     @hybrid_command(hidden=True)
     @commands.is_owner()
@@ -89,23 +81,6 @@ class UtilsA(Cog, name="Utils"):  # type: ignore[call-arg]
                 await ctx.send(f"reloaded {ext}.")
             except ExtensionNotLoaded:
                 await ctx.send(f"I can't find {ext}.")
-
-    @hybrid_command(hidden=True)
-    @commands.is_owner()
-    async def toggle(self, ctx: Context, *, command_str: str) -> None:
-        """Toggle an command to be disable or enabled. Can only be used by cserver#3402."""
-        cmd = self.bot.get_command(command_str)
-
-        if cmd is None:
-            await ctx.send("I could not find that command to disable. Please check your spelling or view the help command.")
-            return
-
-        elif cmd == ctx.command:
-            await ctx.send("You can't disable this command.")
-            return
-
-        cmd.enabled = not cmd.enabled
-        await ctx.send(f"I have {'enabled' if cmd.enabled else 'disabled'} {cmd.qualified_name} for you.")
 
     @hybrid_command(aliases=['pingt'])
     async def ping(self, ctx: Context) -> None:
@@ -174,9 +149,9 @@ class UtilsA(Cog, name="Utils"):  # type: ignore[call-arg]
         start = time()
         msg = await ctx.send(embed=em)
         end = time()
-        em.remove_field(9)
+        em.remove_field(8)
         rnd_trp = f"{(end-start)*1000:,.0f}"
-        em.insert_field_at(index=9, name=":ping_pong: Ping:", value=f"Websocket: {round(self.bot.latency * 1000)} ms.\nRoundtrip: {rnd_trp} ms.\nMonogdb ping: {mongodb_ping} ms.", inline=False)
+        em.insert_field_at(index=8, name=":ping_pong: Ping:", value=f"Websocket: {round(self.bot.latency * 1000)} ms.\nRoundtrip: {rnd_trp} ms.\nMonogdb ping: {mongodb_ping} ms.", inline=False)
         await msg.edit(embed=em)
 
     @hybrid_command()
