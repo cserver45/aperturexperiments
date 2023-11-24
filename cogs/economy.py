@@ -10,7 +10,7 @@ from discord.ext import commands
 from discord.ext.commands import (Cog, Context,
                                    MemberConverter, hybrid_command)
 
-banned_commands = ("deposit", "withdraw", "balance", "send", "shop", "bag", "badges")
+banned_commands = ("deposit", "withdraw", "balance", "send", "shop", "bag")
 
 phrases = ("gib me money", "free money", "noooooooo")
 
@@ -246,20 +246,9 @@ class Economy(Cog):
 
         await ctx.send(embed=em)
 
-    @hybrid_command()
-    async def badges(self, ctx: Context, user: Optional[User]) -> None:
-        """See what badges you currently have."""
-        await self._open_account(ctx, user or ctx.author)
-        result = await self._check_badges(user or ctx.author)
-        em = Embed(title=f"{ctx.author.display_name}\'s Badges",
-                   timestamp=ctx.message.created_at,
-                   description=result
-                   )
-        await ctx.send(embed=em)
-
     @hybrid_command(hidden=True)
     @commands.is_owner()
-    async def add_exp(self, ctx: Context, ammount: int = 500, member: MemberConverter = None) -> None:
+    async def modify_econ(self, ctx: Context, ammount: int = 500, member: MemberConverter = None) -> None:
         """Add coins to someones wallet/bank (Developers only)."""
         if member is None:
             member = ctx.author
@@ -511,22 +500,6 @@ class Economy(Cog):
             await self._update_bank(user, cost, "wallet")
 
         return [True, "Worked"]
-
-    async def _check_badges(self, user: User) -> str:
-        """See what badges the user has."""
-        user_db = await self._get_user_data(user)
-        badge_text = ""
-        try:
-            if user_db["badges"]:
-                for badge in user_db["badges"]:
-                    badge_text += f"{badge} Badge\n"
-                    return badge_text
-            else:
-                return "You have no Badges."
-        except KeyError:
-            await self._change_user_fields(user, "badges", {})
-
-        return "You have no Badges."
 
     """async def get_lb(self, ctx: Context, user: User, field: str) -> Embed:
         Return an embed with the global leaderboard.

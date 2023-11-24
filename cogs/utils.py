@@ -40,29 +40,26 @@ class UtilsA(Cog, name="Utils"):  # type: ignore[call-arg]
 
     @hybrid_command(hidden=True)
     @commands.is_owner()
-    async def load_cog(self, ctx: Context, ext: str) -> None:
+    async def cog_load(self, ctx: Context, ext: str) -> None:
         """Load a Cog."""
         await self.bot.load_extension(f'cogs.{ext}')
         await ctx.send(f"loaded {ext}.")
 
     @hybrid_command(hidden=True)
     @commands.is_owner()
-    async def unload_cog(self, ctx: Context, ext: str) -> None:
+    async def cog_unload(self, ctx: Context, ext: str) -> None:
         """Unloads a Cog."""
         await self.bot.unload_extension(f'cogs.{ext}')
         await ctx.send(f"unloaded {ext}.")
 
     @hybrid_command(hidden=True)
     @commands.is_owner()
-    async def reload_cog(self, ctx: Context, ext: str) -> None:
+    async def cog_reload(self, ctx: Context, ext: str) -> None:
         """Reload a Cog."""
         if ext in ("-", "", " "):
             msg = ""
             for cog in os.listdir("./cogs"):
                 try:
-                    if cog[:-3].lower() == "jishaku":
-                        continue
-
                     await self.bot.unload_extension(f"cogs.{cog[:-3].lower()}")
                     await self.bot.load_extension(f"cogs.{cog[:-3].lower()}")
                     msg += f"reloaded {cog[:-3].lower()}.\n"
