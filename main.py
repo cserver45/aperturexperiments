@@ -100,7 +100,6 @@ class Bot(commands.AutoShardedBot):
         intents = discord.Intents.default()
         intents.members = True
         intents.message_content = True
-        self.on_ready_mode = False
 
         # for that custom function for prod
         self.db_pass = self.config["mongodb"]["passwd"]
@@ -125,15 +124,10 @@ class Bot(commands.AutoShardedBot):
 
     async def on_ready(self) -> None:
         """Call when the bot is ready."""
-        if not self.on_ready_mode:
-            print(" ok")
-            logging.info('Bot Started and online')
+        print(" ok")
+        logging.info('Bot Started and online')
 
-            print(Back.GREEN + Style.BRIGHT + "Bot is online" + Style.RESET_ALL)
-            self.on_ready_mode = True
-        else:
-            print(" ok")
-            print(Back.GREEN + Style.BRIGHT + "Bot restarted and created a new session." + Style.RESET_ALL)
+        print(Back.GREEN + Style.BRIGHT + "Bot is online" + Style.RESET_ALL)
 
     @staticmethod
     async def on_resumed() -> None:
