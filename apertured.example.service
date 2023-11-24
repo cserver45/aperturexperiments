@@ -8,8 +8,8 @@ Type=simple
 Restart=always
 RestartSec=1
 User=cserver
-WorkingDirectory=/spam/discord_bots/py_bots/Enforce/new_bot
-ExecStart=/spam/discord_bots/py_bots/Enforce/new_bot/.env/bin/python3.9 /spam/discord_bots/py_bots/Enforce/new_bot/main.py
+WorkingDirectory=/path/to/your/install/directory
+ExecStart=/path/to/your/install/directory/venv/bin/python3.11 /path/to/your/install/directory/main.py -t protoken --no-dboveride
 
 [Install]
 WantedBy=multi-user.target
