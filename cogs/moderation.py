@@ -4,7 +4,7 @@ from typing import Optional
 from discord import Client, Embed
 from discord.errors import Forbidden
 from discord.ext import commands
-from discord.ext.commands import Cog, Context, Greedy, MemberConverter, command
+from discord.ext.commands import Cog, Context, Greedy, MemberConverter, hybrid_command
 
 # discord.py commands must have self included, even if its not used
 # pylint: disable=R0201
@@ -19,7 +19,7 @@ class Moderation(Cog):
         """Init function."""
         self.bot = bot
 
-    @command()
+    @hybrid_command()
     @commands.bot_has_permissions(send_messages=True, manage_messages=True)
     @commands.has_permissions(manage_messages=True)
     async def clear(self, ctx: Context, amount: int = 5) -> Context:
@@ -27,16 +27,15 @@ class Moderation(Cog):
         if amount < 0:
             return await ctx.send("You can't specify a negitive number of messages to delete.")
         try:
-            await ctx.message.delete()
             try:
+                await ctx.send(f":+1: I have deleted {amount} message(s).")
                 await ctx.channel.purge(limit=int(amount))
-                await ctx.send(f":+1: I have deleted {amount + 1} message(s).", delete_after=5)
             except (TypeError, ValueError):
                 await ctx.send("That is invalid input. Specify a number.")
         except Forbidden:
             return await ctx.send("I don't have the permission to clear messages (manage messages.)")
 
-    @command()
+    @hybrid_command()
     @commands.bot_has_permissions(send_messages=True, kick_members=True)
     @commands.has_permissions(kick_members=True)
     async def kick(self, ctx: Context, members: Greedy[MemberConverter] = None, *, reason: Optional[str] = None) -> None:
@@ -49,9 +48,9 @@ class Moderation(Cog):
                 await mem.kick(reason=reason)
                 await ctx.send(f'{mem.display_name} was kicked from the server')
             except Forbidden:
-                await ctx.send("The Aperture Expieriments role is below what that users highest role is. Fix your roles by putting my role above there's.")
+                await ctx.send("The Aperture Expieriments role is below what that users highest role is. Fix your roles by putting my role above theirs.")
 
-    @command()
+    @hybrid_command()
     @commands.bot_has_permissions(send_messages=True, ban_members=True)
     @commands.has_permissions(ban_members=True)
     async def ban(self, ctx: Context, members: Greedy[MemberConverter] = None, *, reason: Optional[str] = "No reason was given.") -> None:
@@ -64,30 +63,24 @@ class Moderation(Cog):
                 await mem.ban(reason=reason)
                 await ctx.send(f'{mem.display_name} was banned from the server')
             except Forbidden:
-                await ctx.send("The Aperture Expieriments role is below what that users highest role is. Fix your roles by putting my role above there's.")
+                await ctx.send("The Aperture Expieriments role is below what that users highest role is. Fix your roles by putting my role above theirs.")
 
-    @command()
+    @hybrid_command()
     @commands.bot_has_permissions(send_messages=True, ban_members=True)
     @commands.has_permissions(ban_members=True)
-    async def unban(self, ctx: Context, members, reason: Optional[str] = "No reason was given.") -> None:
-        """Unban a user that was banned from the server. Does not take mentions, only id's and usernames with descriminators."""
-        # thanks Parafoxia for this code sniplet
-        if not members:
-            await ctx.send(":negative_squared_cross_mark: No valid members were passed.")
+    async def unban(self, ctx: Context, member, reason: Optional[str] = "No reason was given.") -> None:
+        """Unban a user that was banned from the server. IDs only."""
+        if not member:
+            await ctx.send("Please give only the IDs of the members.")
         else:
-            count = 0
 
             async with ctx.typing():
-                for member in members:
-                    await ctx.guild.unban(member, reason=reason)
-                    count += 1
+                user = await self.bot.fetch_user(member)
+                await ctx.guild.unban(user, reason=reason)
 
-                if count > 0:
-                    await ctx.send(f":white_check_mark: {count:,} user(s) were unbanned.")
-                else:
-                    await ctx.send(":negative_squared_cross_mark: No users were unbanned.")
+                await ctx.send("That person has been unbanned.")
 
-    @command(aliases=["setnick"])
+    @hybrid_command(aliases=["setnick"])
     @commands.has_permissions(manage_nicknames=True)
     @commands.bot_has_permissions(send_messages=True, manage_nicknames=True)
     async def set_nickname(self, ctx: Context, member: MemberConverter, *, nickname: str) -> None:
@@ -103,7 +96,7 @@ class Moderation(Cog):
             except Forbidden:
                 await ctx.send(f"I am below the highest role that {member.display_name} has.")
 
-    @command(aliases=['whoami', 'userinfo'])
+    @hybrid_command(aliases=['whoami', 'userinfo'])
     async def whois(self, ctx: Context, member: MemberConverter = None) -> None:
         """See who a user is (account date creation, joined server date, etc)."""
         if member is None:
@@ -113,7 +106,7 @@ class Moderation(Cog):
         roles.append('@everyone')  # adds @everyone back to the list
 
         Em = Embed(title=f'Info on {member}', timestamp=ctx.message.created_at)
-        Em.set_thumbnail(url=member.avatar_url)
+        Em.set_thumbnail(url=member.avatar.url if member.avatar is not None else None)
         Em.set_footer(text=f"Requested by {ctx.author}.")
         Em.add_field(name="ID:", value=member.id)
         Em.add_field(name="Display Name:", value=member.display_name)
@@ -121,7 +114,9 @@ class Moderation(Cog):
         Em.add_field(name="Joined Server On:", value=member.joined_at.strftime("%a, %#d %B %Y, %I:%M %p UTC"))
         Em.add_field(name="Roles:", value="".join(role for role in roles))
         Em.add_field(name="Highest Role:", value=member.top_role)
-        Em.add_field(name='Avatar:', value=f'[Link to avatar]({member.avatar_url})')
+        if member.avatar is not None:
+            Em.set_thumbnail(url=member.avatar.url)
+            Em.add_field(name='Avatar:', value=f'[Link to avatar]({member.avatar.url})')
 
         await ctx.send(embed=Em)
 
