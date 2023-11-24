@@ -1,7 +1,7 @@
 """Auto reporter and command logging."""
 import sys
 import traceback
-
+from textwrap import wrap
 from discord import Client, Embed, Forbidden
 from discord.ext.commands import (BotMissingPermissions, Cog, CommandNotFound,
                                    CommandOnCooldown, Context, DisabledCommand,
@@ -74,7 +74,10 @@ class AutoReporterEvents(Cog):
         trace = "".join(traceback.format_exception(None, exc, exc.__traceback__))
         print("\n\n\n", file=sys.stderr)
         print(trace, file=sys.stderr)
-        await channel.send(f"Error report: ```{trace}\n\nSpecific Error:\n{exc}```")
+        error_strs = wrap(trace, 1900)
+        for part in error_strs:
+            await channel.send(f"Error report: ```{part}```")
+        await channel.send(f"Specific Error:\n```{exc}```")
 
 
 async def setup(bot: Client) -> None:

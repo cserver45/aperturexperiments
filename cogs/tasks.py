@@ -37,7 +37,6 @@ class TasksCog(Cog):
     async def change_status(self) -> None:
         """Changes the bot status in discord."""
         await self.bot.change_presence(activity=Activity(type=ActivityType.watching, name=(next(self.status))))
-        print("done")
 
 
 async def setup(bot: Client) -> None:
