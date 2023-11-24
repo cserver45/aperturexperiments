@@ -1,5 +1,4 @@
 discord.py
-colorama
 motor
 aiofiles
 aiohttp[speedups]

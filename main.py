@@ -3,14 +3,12 @@
 
 import argparse
 import configparser
-import logging
 import os
 from typing import Tuple
 
 import aiohttp
 import discord
 import motor.motor_asyncio
-from colorama import Back, Style
 from discord.ext import commands  # pylint: disable=E0611
 from discord.ext.commands import (CommandNotFound, CommandOnCooldown, Context,
                                    MissingPermissions, MissingRequiredArgument,
@@ -85,17 +83,6 @@ class Bot(commands.AutoShardedBot):
                                           name='Starting up...'
                                          )
 
-        # logging stuff
-        logging.basicConfig(filename='log.log',  # what file to log to
-                            format='%(levelname)s:%(message)s. Sent at %(asctime)s',  # level then message then time
-                            level=self.argus.loglevel,  # highest level in logging
-                            datefmt='%m/%d/%Y %I:%M:%S %p'  # the date format looks like this: 1/14/2020 5:50:23 PM
-                            )
-
-        # log loglevel and token type
-        logging.info('Logging level is set to %s', self.argus.loglevel)
-        logging.info('Token is set to %s', self.argus.token)
-
         # also define intents
         intents = discord.Intents.default()
         intents.members = True
@@ -120,29 +107,6 @@ class Bot(commands.AutoShardedBot):
                          )
 
         print(train)
-        print(Back.GREEN + Style.BRIGHT + "Bot is starting up..." + Style.RESET_ALL)
-
-    async def on_ready(self) -> None:
-        """Call when the bot is ready."""
-        print(" ok")
-        logging.info('Bot Started and online')
-
-        print(Back.GREEN + Style.BRIGHT + "Bot is online" + Style.RESET_ALL)
-
-    @staticmethod
-    async def on_resumed() -> None:
-        """Call when the session is resumed."""
-        print(Back.GREEN + Style.BRIGHT + "Bot resumed a session with discord (restarted)." + Style.RESET_ALL)
-
-    @staticmethod
-    async def on_connect() -> None:
-        """Call when the bot connects to discord."""
-        print(Back.GREEN + Style.BRIGHT + "Bot connecting to discord..." + Style.RESET_ALL, end='')
-
-    @staticmethod
-    async def on_disconnect() -> None:
-        """Call when bot gets disconnected from discord."""
-        print(Back.GREEN + Style.BRIGHT + "Bot Disconnected from discord." + Style.RESET_ALL)
 
     async def on_command_error(self, _: Context, error: Exception) -> None:  # pylint: disable=W0221
         """Call when a command has an error."""
