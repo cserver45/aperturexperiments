@@ -1,33 +1,12 @@
 """Fun and games cog."""
 from random import choice, randint
-from typing import Optional
+from typing import Optional, Literal
 
 from discord import Client, Color, Embed, Message
-from discord.ext.commands import Cog, Context, MemberConverter, command, hybrid_command
-
-from .lib.enums import RPS  # pylint: disable=E0402
+from discord.ext.commands import Cog, Context, MemberConverter, hybrid_command
 
 # discord.py commands must have self included, even if its not used
 # pylint: disable=R0201
-
-
-class RPSParser:
-    """Parser for rock, paper, scissors."""
-
-    __slots__ = ("rpschoice", "choice")
-
-    def __init__(self, rpschoice: str):
-        """Init code."""
-        rpschoice = rpschoice.lower()
-        if rpschoice == "rock":
-            self.choice = RPS.rock
-        elif rpschoice == "paper":
-            self.choice = RPS.paper
-        elif rpschoice == "scissors":
-            self.choice = RPS.scissors
-        else:
-            self.choice = None
-
 
 class Games(Cog):
     """Parent class."""
@@ -60,14 +39,9 @@ class Games(Cog):
         else:
             await ctx.send("*flips a coin and... " + choice(["its HEADS!*", "its TAILS!*"]))
 
-    @command(name="rps")
-    async def rockps(self, ctx: Context, p_choice: RPSParser) -> None:
+    @hybrid_command(name="rps")
+    async def rockps(self, ctx: Context, player_c: Literal["Rock", "Paper", "Scissors"]) -> None:
         """Play Rock Paper Scissors against the bot."""
-        player_c = p_choice.choice
-        if not player_c:
-            await ctx.send("That is not a valid choice. Choose Either `rock`, `paper`, or `scissors`.")
-            return
-
         user = await self.db.rpstats.find_one({"userid": ctx.author.id})
 
         if user is None:
@@ -75,15 +49,15 @@ class Games(Cog):
             # refetch the user with updated info
             user = await self.db.rpstats.find_one({"userid": ctx.author.id})
 
-        bot_choice = choice((RPS.rock, RPS.paper, RPS.scissors))
+        bot_choice = choice(("Rock", "Paper", "Scissors"))
 
         cond = {
-            (RPS.rock, RPS.paper): False,
-            (RPS.rock, RPS.scissors): True,
-            (RPS.paper, RPS.rock): True,
-            (RPS.paper, RPS.scissors): False,
-            (RPS.scissors, RPS.rock): False,
-            (RPS.scissors, RPS.paper): True,
+            ("Rock", "Paper"): False,
+            ("Rock", "Scissors"): True,
+            ("Paper", "Rock"): True,
+            ("Paper", "Scissors"): False,
+            ("Scissors", "Rock"): False,
+            ("Scissors", "Paper"): True,
         }
 
         if bot_choice == player_c:
@@ -93,13 +67,13 @@ class Games(Cog):
 
         if result is True:
             await self.db.rpstats.update_one({"userid": ctx.author.id}, {"$set": {"win": (user["win"] + 1)}})
-            await ctx.reply(content=f"You won! You had {player_c.value}, and I had {bot_choice.value}.")
+            await ctx.reply(content=f"You won! You had {player_c}, and I had {bot_choice}.")
         elif result is False:
             await self.db.rpstats.update_one({"userid": ctx.author.id}, {"$set": {"lost": (user["lost"] + 1)}})
-            await ctx.reply(content=f"You loose. You had {player_c.value}, and I had {bot_choice.value}.")
+            await ctx.reply(content=f"You lost. You had {player_c}, and I had {bot_choice}.")
         else:
             await self.db.rpstats.update_one({"userid": ctx.author.id}, {"$set": {"tie": (user["tie"] + 1)}})
-            await ctx.reply(content=f"We're Even! We both got {player_c.value}")
+            await ctx.reply(content=f"It's a tie! We both got {player_c}")
 
     @hybrid_command()
     async def rpstats(self, ctx: Context) -> None:
