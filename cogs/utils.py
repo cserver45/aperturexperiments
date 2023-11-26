@@ -94,13 +94,8 @@ class UtilsA(Cog, name="Utils"):  # type: ignore[call-arg]
     @hybrid_command(name="bot_status", aliases=["status", "stats", "bot_info"])
     async def show_bot_status(self, ctx: Context) -> None:
         """Gets some info about the bot."""
-        try:
-            em = Embed(title="Bot info", colour=ctx.author.color,
-                       thumbnail=self.bot.user.avatar.url,
-                       timestamp=ctx.message.created_at)
-        except AttributeError:
-            em = Embed(title="Bot info", colour=ctx.author.color,
-                       timestamp=ctx.message.created_at)
+        em = Embed(title="Bot info", colour=ctx.author.color,
+                   timestamp=ctx.message.created_at)
 
         p = Process()
 
