@@ -69,8 +69,8 @@ class Bot(commands.AutoShardedBot):
     parser.add_argument('--token',
                         '-t',
                         type=str,
-                        default='testtoken',
-                        help='Sets the token type. defalt is testtoken. Options: protoken, testtoken'
+                        default='protoken',
+                        help='Sets the token type. defalt is protoken. Options: protoken, testtoken'
                         )
     parser.add_argument('--dboveride',
                         action=argparse.BooleanOptionalAction,  # type: ignore
