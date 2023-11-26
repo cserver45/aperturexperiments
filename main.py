@@ -87,7 +87,7 @@ class Bot(commands.AutoShardedBot):
 
         # configuration file parser
         self.config = configparser.ConfigParser()
-        self.config.read('bot.conf')
+        self.config.read('config/bot.conf')
 
         if self.argus.token == "protoken":
             self.config["mongodb"]["passwd"] = self.config["mongodb"]["passwd"].replace("authSource=aperturelabsbot", "authSource=admin")
