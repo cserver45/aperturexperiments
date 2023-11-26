@@ -38,23 +38,23 @@ class UtilsA(Cog, name="Utils"):  # type: ignore[call-arg]
         self.bot_version = str(self.bot.config["main"]["version"])
         self.db = bot.db
 
-    @hybrid_command(hidden=True)
+    @hybrid_command(hidden=True, name="cog_load")
     @commands.is_owner()
-    async def cog_load(self, ctx: Context, ext: str) -> None:
+    async def _cog_load(self, ctx: Context, ext: str) -> None:
         """Load a Cog."""
         await self.bot.load_extension(f'cogs.{ext}')
         await ctx.send(f"loaded {ext}.")
 
-    @hybrid_command(hidden=True)
+    @hybrid_command(hidden=True, name="cog_unload")
     @commands.is_owner()
-    async def cog_unload(self, ctx: Context, ext: str) -> None:
+    async def _cog_unload(self, ctx: Context, ext: str) -> None:
         """Unloads a Cog."""
         await self.bot.unload_extension(f'cogs.{ext}')
         await ctx.send(f"unloaded {ext}.")
 
-    @hybrid_command(hidden=True)
+    @hybrid_command(hidden=True, name="cog_reload")
     @commands.is_owner()
-    async def cog_reload(self, ctx: Context, ext: str) -> None:
+    async def _cog_reload(self, ctx: Context, ext: str) -> None:
         """Reload a Cog."""
         if ext in ("-", "", " "):
             msg = ""
