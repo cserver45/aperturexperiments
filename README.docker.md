@@ -3,7 +3,7 @@ A General Purpose Discord Bot
 
 ## Install Instructions
 - Download the container
-``` docker run -d -v /path/to/your/config/:/app/config cserver45/aperturexperiments ```
+``` docker run -d -v /path/to/your/config/:/app/config cserver45/aperturexperiments:latest ```
 
 It will error out, that is because you need to add your own config
 
