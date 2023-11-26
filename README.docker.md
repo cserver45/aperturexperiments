@@ -14,6 +14,7 @@ It will error out, that is because you need to add your own config
 - add your discord user id under `owner_ids`
 - everything else is optional
 
+- rename the file from `bot.example.conf` to `bot.conf`
 - Now run the command again, and you should see the bot come alive
 
 
