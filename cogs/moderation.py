@@ -18,6 +18,13 @@ class Moderation(Cog):
     def __init__(self, bot: Client) -> None:
         """Init function."""
         self.bot = bot
+        self.db = bot.db
+        allbanned = self.db.banned_users.find()
+        if allbanned:
+            for user in allbanned:
+                self.banned.append({user["userid"]: user["time"]})
+        else:
+            self.banned = []
 
     @hybrid_command()
     @commands.bot_has_permissions(send_messages=True, manage_messages=True)
