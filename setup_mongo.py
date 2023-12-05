@@ -4,7 +4,28 @@ import pymongo
 # pymongo does not need to be added to requirements.txt, due to motor requiring it
 
 # insert the default items
-items = {}
+items = {
+    {
+        "name": "Watch", 
+        "description": "Time (useless right now)",
+        "price": 100
+    },
+    {
+        "name": "Apple",
+        "descirption": "It's an apple",
+        "price": 10
+    },
+    {
+        "name": "Laptop",
+        "description": "Work",
+        "price": 1000
+    },
+    {
+        "name": "Mask",
+        "description": "Used for diving",
+        "price": 350
+    }
+}
 
 
 # 
