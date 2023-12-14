@@ -13,14 +13,17 @@ from discord.ext.commands import Cog, Context, Greedy, MemberConverter, hybrid_c
 class Moderation(Cog):
     """Moderation Cog Parent class."""
 
-    __slots__ = ("bot",)
+    __slots__ = ("bot", "db", "banned")
 
     def __init__(self, bot: Client) -> None:
         """Init function."""
         self.bot = bot
         self.db = bot.db
+        self.banned = []
+        
+    def SetBannedList(self):
         allbanned = self.db.banned_users.find()
-        if allbanned:
+        if allbanned is not None:
             for user in allbanned:
                 self.banned.append({user["userid"]: user["time"]})
         else:
@@ -67,8 +70,9 @@ class Moderation(Cog):
             return
         for mem in members:
             try:
-                await mem.ban(reason=reason)
+                # await mem.ban(reason=reason)
                 await ctx.send(f'{mem.display_name} was banned from the server')
+                await self.db.banned_users.insert_one({"userid": mem.userid, "time": "forever"})
             except Forbidden:
                 await ctx.send("The Aperture Expieriments role is below what that users highest role is. Fix your roles by putting my role above theirs.")
 
