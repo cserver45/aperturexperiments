@@ -22,6 +22,7 @@ class Moderation(Cog):
         self.banned = []
 
         self.add_banned_users.start()
+        self.banned_status.start()
 
     @tasks.loop(seconds=0.5, count=1)
     async def add_banned_users(self):
@@ -29,10 +30,18 @@ class Moderation(Cog):
         allbanned = self.db.banned_users.find()
         if allbanned is not None:
             async for user in allbanned:
-                self.banned.append({user["userid"]: user["time"]})
+                self.banned.append({'userid': user["userid"], 'time': user["time"]})
 
         print(self.banned) # you can remove this later if you want
-
+        
+    @tasks.loop(seconds=10)
+    async def banned_status(self) -> None:
+        """Changes the banned status of a user."""
+        for user in self.banned:
+            if user['userid'] == 'e':
+                print('works bozo')
+            print('e')
+        
     @hybrid_command()
     @commands.bot_has_permissions(send_messages=True, manage_messages=True)
     @commands.has_permissions(manage_messages=True)
