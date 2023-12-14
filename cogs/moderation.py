@@ -3,7 +3,7 @@ from typing import Optional
 
 from discord import Client, Embed
 from discord.errors import Forbidden
-from discord.ext import commands
+from discord.ext import commands, tasks
 from discord.ext.commands import Cog, Context, Greedy, MemberConverter, hybrid_command
 
 # discord.py commands must have self included, even if its not used
@@ -20,14 +20,18 @@ class Moderation(Cog):
         self.bot = bot
         self.db = bot.db
         self.banned = []
-        
-    def SetBannedList(self):
+
+        self.add_banned_users.start()
+
+    @tasks.loop(seconds=0.5, count=1)
+    async def add_banned_users(self):
+        """Add the users that are banned."""
         allbanned = self.db.banned_users.find()
         if allbanned is not None:
-            for user in allbanned:
+            async for user in allbanned:
                 self.banned.append({user["userid"]: user["time"]})
-        else:
-            self.banned = []
+
+        print(self.banned) # you can remove this later if you want
 
     @hybrid_command()
     @commands.bot_has_permissions(send_messages=True, manage_messages=True)
