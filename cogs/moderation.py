@@ -85,7 +85,7 @@ class Moderation(Cog):
             try:
                 # await mem.ban(reason=reason)
                 await ctx.send(f'{mem.display_name} was banned from the server')
-                await self.db.banned_users.insert_one({"userid": mem.userid, "time": "forever"})
+                await self.db.banned_users.insert_one({"userid": mem.id, "time": "forever"})
             except Forbidden:
                 await ctx.send("The Aperture Expieriments role is below what that users highest role is. Fix your roles by putting my role above theirs.")
 

@@ -131,7 +131,7 @@ class UtilsA(Cog, name="Utils"):  # type: ignore[call-arg]
             (":adult: Users:", f"{actual_members_total[0]:,}", True),
             (":homes: Servers (guilds):", f"{actual_members_total[1]:,}", True),
             (":gear: Cogs loaded:", f"{self.bot.cog_count}/{cog_amount} loaded", True),
-            (":ping_pong: Ping:", f"Websocket: {round(self.bot.latency * 1000)} ms.\nRoundtrip: {rnd_trp} ms.\nMonogdb ping: {mongodb_ping} ms.", False),
+            (":ping_pong: Ping:", f"Websocket: {round(self.bot.latency * 1000)} ms.\nRoundtrip: {rnd_trp} ms.\nMongodb ping: {mongodb_ping} ms.", False),
             (":clock1: Uptime:", f"{days} days, {hours} hours, {minutes} minutes, {seconds} seconds", False)
         ]
 
@@ -143,7 +143,7 @@ class UtilsA(Cog, name="Utils"):  # type: ignore[call-arg]
         end = time()
         em.remove_field(8)
         rnd_trp = f"{(end-start)*1000:,.0f}"
-        em.insert_field_at(index=8, name=":ping_pong: Ping:", value=f"Websocket: {round(self.bot.latency * 1000)} ms.\nRoundtrip: {rnd_trp} ms.\nMonogdb ping: {mongodb_ping} ms.", inline=False)
+        em.insert_field_at(index=8, name=":ping_pong: Ping:", value=f"Websocket: {round(self.bot.latency * 1000)} ms.\nRoundtrip: {rnd_trp} ms.\nMongodb ping: {mongodb_ping} ms.", inline=False)
         await msg.edit(embed=em)
 
     @hybrid_command()
