@@ -91,7 +91,7 @@ class UtilsA(Cog, name="Utils"):  # type: ignore[call-arg]
             text = await f.read()
             await ctx.send(text)
 
-    @hybrid_command(name="bot_status", aliases=["status", "stats", "bot_info"])
+    @hybrid_command(name="info", aliases=["bot_info"])
     async def show_bot_status(self, ctx: Context) -> None:
         """Gets some info about the bot."""
         em = Embed(title="Bot info", colour=ctx.author.color,
