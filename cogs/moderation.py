@@ -1,4 +1,5 @@
 """Moderation Cog."""
+from datetime import datetime
 from typing import Optional
 
 from discord import Client, Embed
@@ -22,7 +23,7 @@ class Moderation(Cog):
         self.banned = []
 
         self.add_banned_users.start()
-        self.banned_status.start()
+        # self.banned_status.start()
 
     @tasks.loop(seconds=0.5, count=1)
     async def add_banned_users(self):
@@ -38,9 +39,13 @@ class Moderation(Cog):
     async def banned_status(self) -> None:
         """Changes the banned status of a user."""
         for user in self.banned:
-            if user['userid'] == 'e':
-                print('works bozo')
-            print('e')
+            if user['time'] != 'forever':
+                time = datetime.now()
+                if user['time'] <= time:
+                    self.banned.pop(user['userid'])
+                    print(self.banned)
+            else:
+                continue
         
     @hybrid_command()
     @commands.bot_has_permissions(send_messages=True, manage_messages=True)
@@ -76,7 +81,7 @@ class Moderation(Cog):
     @hybrid_command()
     @commands.bot_has_permissions(send_messages=True, ban_members=True)
     @commands.has_permissions(ban_members=True)
-    async def ban(self, ctx: Context, members: Greedy[MemberConverter] = None, *, reason: Optional[str] = "No reason was given.") -> None:
+    async def ban(self, ctx: Context, members: Greedy[MemberConverter] = None, time: str = None, *, reason: Optional[str] = "No reason was given.") -> None:
         """Bans a member from the Discord Server."""
         if not members:
             await ctx.send('Please mention a member')
@@ -84,8 +89,8 @@ class Moderation(Cog):
         for mem in members:
             try:
                 # await mem.ban(reason=reason)
-                await ctx.send(f'{mem.display_name} was banned from the server')
-                await self.db.banned_users.insert_one({"userid": mem.id, "time": "forever"})
+                await ctx.send(f'{mem.display_name} was banned from the server for {time}. Reason: {reason}')
+                await self.db.banned_users.insert_one({"userid": mem.id, "time": f"{datetime.now() if time is not None else 'forever'}"})
             except Forbidden:
                 await ctx.send("The Aperture Expieriments role is below what that users highest role is. Fix your roles by putting my role above theirs.")
 
