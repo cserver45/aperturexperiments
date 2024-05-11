@@ -2,6 +2,9 @@
 
 This is the github page for the Aperture Experiments discord bot.
 
+## This project has been archived, and no new development/support will be given
+## Last (tested) working build was using discord.py v2.3.2, and on debian 12.
+
 #### Some of the features include:
 
 - Economy system
